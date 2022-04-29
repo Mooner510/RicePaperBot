@@ -22,7 +22,7 @@ import static bot.utils.Json.urlFormat;
 public class RiceCommand implements BotCommand {
     @Override
     public SlashCommandData getCommand() {
-        return Commands.slash("rice", "오늘은 뭐가 나올까?");
+        return Commands.slash("rice", "오늘은 뭐가 나올까");
     }
 
     @Override
