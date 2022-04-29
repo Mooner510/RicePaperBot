@@ -12,6 +12,7 @@ import java.util.Scanner;
 public class Main {
     public static JDA jda;
     public static BotEventListener commandListener;
+
     public static void main(String[] args) {
         try {
             jda = JDABuilder.createLight(args[0], GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGE_REACTIONS, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_VOICE_STATES)

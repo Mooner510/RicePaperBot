@@ -1,6 +1,5 @@
-package bot.cmd.commands;
+package bot.cmd.commands.privateCommand;
 
-import bot.MySendHandler;
 import bot.cmd.BotCommand;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -22,5 +21,4 @@ public class MusicCommand implements BotCommand {
         manager.setSendingHandler(new MySendHandler(playerManager.createPlayer()));
         manager.openAudioConnection(channel);
     }
-
 }

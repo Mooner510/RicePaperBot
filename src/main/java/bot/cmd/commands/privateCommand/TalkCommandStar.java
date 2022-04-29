@@ -1,4 +1,4 @@
-package bot.cmd.commands;
+package bot.cmd.commands.privateCommand;
 
 import bot.cmd.BotCommand;
 import net.dv8tion.jda.api.entities.MessageChannel;

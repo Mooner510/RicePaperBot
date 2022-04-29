@@ -1,16 +1,14 @@
-package bot.cmd.commands;
+package bot.cmd.commands.privateCommand;
 
 import bot.cmd.BotCommand;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-import java.io.File;
-
-public class ImageCommandTest implements BotCommand {
+public class TalkCommandSeoul implements BotCommand {
     @Override
     public void onMessage(MessageReceivedEvent event) {
         MessageChannel channel = event.getChannel();
         long time = System.currentTimeMillis();
-        channel.sendMessage("6등급각").addFile(new File("C:\\Users\\DSM2022\\Downloads\\Notes_220428_224107.jpg")).queue();
+        channel.sendMessage("나는 능히할 수 있다.").queue();
     }
 }

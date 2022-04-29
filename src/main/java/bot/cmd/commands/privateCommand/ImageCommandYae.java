@@ -1,15 +1,16 @@
-package bot.cmd.commands;
+package bot.cmd.commands.privateCommand;
 
 import bot.cmd.BotCommand;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class PingCommand implements BotCommand {
+import java.io.File;
+
+public class ImageCommandYae implements BotCommand {
     @Override
     public void onMessage(MessageReceivedEvent event) {
         MessageChannel channel = event.getChannel();
         long time = System.currentTimeMillis();
-        channel.sendMessage("Pong!").queue(response ->
-                response.editMessageFormat("Pong: %d ms", System.currentTimeMillis() - time).queue());
+        channel.sendFile(new File("C:\\Users\\DSM2022\\Downloads\\dog.png")).queue();
     }
 }
