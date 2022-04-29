@@ -1,7 +1,10 @@
 package bot.cmd;
 
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 public interface BotCommand {
-    void onMessage(MessageReceivedEvent event);
+    SlashCommandData getCommand();
+
+    void onCommand(SlashCommandInteractionEvent event);
 }
