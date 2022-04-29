@@ -6,8 +6,6 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
-
-import javax.lang.model.element.ElementVisitor;
 import java.util.HashMap;
 
 public class BotEventListener extends ListenerAdapter {

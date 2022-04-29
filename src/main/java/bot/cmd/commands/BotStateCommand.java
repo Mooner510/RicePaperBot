@@ -4,8 +4,6 @@ import bot.cmd.BotCommand;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-import java.util.Scanner;
-
 import static bot.Main.jda;
 
 public class BotStateCommand implements BotCommand {

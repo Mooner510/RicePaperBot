@@ -11,6 +11,6 @@ public class ImageCommandTest implements BotCommand {
     public void onMessage(MessageReceivedEvent event) {
         MessageChannel channel = event.getChannel();
         long time = System.currentTimeMillis();
-        channel.sendFile(new File("C:\\Users\\DSM2022\\Downloads\\Notes_220428_224107.jpg")).queue();
+        channel.sendMessage("6등급각").addFile(new File("C:\\Users\\DSM2022\\Downloads\\Notes_220428_224107.jpg")).queue();
     }
 }
