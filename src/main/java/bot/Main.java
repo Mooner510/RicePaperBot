@@ -15,7 +15,7 @@ public class Main {
     public static BotEventListener commandListener;
     public static void main(String[] args) {
         try {
-            jda = JDABuilder.createLight("OTY5MDE1NTE5ODc1MzI1OTky.YmnQBw.sQ2wmrieLepEWRlxUCswhIuxJv4", GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGE_REACTIONS, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_VOICE_STATES)
+            jda = JDABuilder.createLight(args[0], GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGE_REACTIONS, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_VOICE_STATES)
                     .setActivity(Activity.playing("지랄"))
                     .addEventListeners(commandListener = new BotEventListener())
                     .build();
