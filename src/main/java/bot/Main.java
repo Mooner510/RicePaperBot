@@ -26,6 +26,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         tag: while(true) {
             switch (scanner.nextLine()) {
+                case "":
                 case "s":
                 case "S":
                 case "ㄴ":
