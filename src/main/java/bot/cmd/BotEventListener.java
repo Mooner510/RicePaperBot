@@ -21,6 +21,8 @@ public class BotEventListener extends ListenerAdapter {
 
     public BotEventListener() {
         commands = new HashMap<>();
+        buttons = new HashMap<>();
+        selects = new HashMap<>();
     }
 
     public void register() {
