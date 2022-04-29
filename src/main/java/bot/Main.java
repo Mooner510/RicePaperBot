@@ -16,13 +16,13 @@ public class Main {
     public static void main(String[] args) {
         try {
             jda = JDABuilder.createLight(args[0], GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGE_REACTIONS, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_VOICE_STATES)
-                    .setActivity(Activity.playing("지랄"))
                     .addEventListeners(commandListener = new BotEventListener())
                     .build();
         } catch (LoginException e) {
             throw new RuntimeException(e);
         }
         commandListener.register();
+        commandListener.updateCommand();
         Scanner scanner = new Scanner(System.in);
         tag: while(true) {
             switch (scanner.nextLine()) {
