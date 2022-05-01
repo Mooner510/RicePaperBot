@@ -33,12 +33,7 @@ public class RiceCommand implements BotCommand {
     }
 
     private static String gguk(String s){
-        final String replace = s.replaceAll("\\(([^(^)]+)\\)", "").replaceAll("<([^<^>]+)>", "").replaceAll("([.*\\-0-9]+)", "");
-        StringJoiner joiner = new StringJoiner("\n");
-        for (String string : replace.split(" ")) {
-            if(!string.isEmpty()) joiner.add(string);
-        }
-        return joiner.toString();
+        return s.replace("<br/>", "\n").replaceAll("\\(([^(^)]+)\\)", "").replaceAll("([.*\\-0-9]+)", "");
     }
 
     public enum RiceType {
@@ -87,6 +82,7 @@ public class RiceCommand implements BotCommand {
             int length = array.length();
             for (int i = 0; i < length; i++) {
                 JSONObject json = array.getJSONObject(i);
+                System.out.println(json.getString("DDISH_NM"));
                 index.put(json.getString("MMEAL_SC_NM"), gguk(json.getString("DDISH_NM")));
             }
 

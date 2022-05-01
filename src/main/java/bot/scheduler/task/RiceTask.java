@@ -102,7 +102,7 @@ public class RiceTask {
                 } else {
                     user.openPrivateChannel().queue(privateChannel -> {
                         if (privateChannel.canTalk()) {
-                            MessageEmbed embed = RiceCommand.getRiceEmbed(schoolData, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), type);
+                            MessageEmbed embed = RiceCommand.getRiceEmbed(schoolData, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), type);
                             if(embed != null) privateChannel.sendMessageEmbeds(embed).queue();
                         }
                     });
