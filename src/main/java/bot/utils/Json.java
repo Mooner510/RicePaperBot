@@ -1,5 +1,6 @@
 package bot.utils;
 
+import bot.SchoolData;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -26,8 +27,8 @@ public class Json {
         }
     }
 
-    public static String urlFormat(int year, int month, int day) {
-        return "https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=83814d97c86242f7ae8e68e83a051933&Type=json&ATPT_OFCDC_SC_CODE=G10&SD_SCHUL_CODE=7430310&MLSV_YMD=" + year + a(month) + a(day);
+    public static String urlFormat(SchoolData data, int year, int month, int day) {
+        return "https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=83814d97c86242f7ae8e68e83a051933&Type=json&ATPT_OFCDC_SC_CODE=" + data.getTag() + "&SD_SCHUL_CODE=" + data.getCode() +  "&MLSV_YMD=" + year + a(month) + a(day);
     }
 
     private static String a(int value) {
@@ -36,5 +37,9 @@ public class Json {
         } else {
             return String.valueOf(value);
         }
+    }
+
+    public static String currentDate(int month, int day) {
+        return month + "월 " + day + "일 ";
     }
 }

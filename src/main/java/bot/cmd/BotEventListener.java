@@ -1,7 +1,9 @@
 package bot.cmd;
 
-import bot.cmd.buttons.ShowButton;
+import bot.cmd.buttons.RiceButton;
 import bot.cmd.commands.*;
+import bot.utils.InteractionIdParser;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
@@ -11,8 +13,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.StringJoiner;
 
 import static bot.Main.jda;
+import static bot.Main.queueLog;
 
 public class BotEventListener extends ListenerAdapter {
     public static HashMap<String, BotCommand> commands;
@@ -27,8 +31,10 @@ public class BotEventListener extends ListenerAdapter {
 
     public void register() {
         commands.put("rice", new RiceCommand());
+        commands.put("setschool", new SetSchoolCommand());
+        commands.put("setnotify", new SetNotifyCommand());
 
-        buttons.put("rice", new ShowButton());
+        buttons.put("rice", new RiceButton());
 
         updateCommand();
     }
@@ -39,26 +45,53 @@ public class BotEventListener extends ListenerAdapter {
         jda.updateCommands().addCommands(data).queue();
     }
 
+    public static String createId(long userId, String command, Object... arguments) {
+        StringJoiner joiner = new StringJoiner("/");
+        for (Object o : arguments) joiner.add(String.valueOf(o));
+        return userId+":"+command+"%"+joiner;
+    }
+
+    public static InteractionIdParser parseId(String id) {
+        String[] v1 = id.split(":");
+        String[] v2 = v1[1].split("%");
+        String[] v3 = v2[1].split("/");
+        return new InteractionIdParser(Long.parseLong(v1[0]), v2[0], v3);
+    }
+
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         String id;
         if(commands.containsKey(id = event.getName())) {
             commands.get(id).onCommand(event);
+            queueLog("SlashCommand", event.getUser(), id);
+        }
+    }
+
+    @Override
+    public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event) {
+        String id;
+        if(commands.containsKey(id = event.getName())) {
+            commands.get(id).onComplete(event);
         }
     }
 
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
-        String id;
-        if(buttons.containsKey(id = event.getButton().getId())) {
-            buttons.get(id).onClick(event);
+        String id = event.getButton().getId();
+        if(id != null) {
+            InteractionIdParser parser = parseId(id);
+            if (parser.compare(event.getUser())) {
+                buttons.get(parser.getCmd()).onClick(event, parser.getArguments());
+                queueLog("ButtonInteract", event.getUser(), id);
+            }
         }
     }
 
     @Override
     public void onSelectMenuInteraction(@NotNull SelectMenuInteractionEvent event) {
-        String id;
-        if(selects.containsKey(id = event.getComponent().getId())) {
+        String id = event.getSelectMenu().getId();
+        if(id != null) {
+            id = id.split(":")[0];
             selects.get(id).onSelect(event);
         }
     }
