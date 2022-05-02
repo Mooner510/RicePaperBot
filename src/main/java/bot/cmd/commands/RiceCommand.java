@@ -15,9 +15,12 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
 import static bot.Main.schools;
@@ -136,8 +139,22 @@ public class RiceCommand implements BotCommand {
         c1.add(Calendar.DAY_OF_MONTH, -1);
         c2.setTime(date);
         c2.add(Calendar.DAY_OF_MONTH, 1);
+
+        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
+        SelectMenu.Builder builder = SelectMenu.create("rice");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy년 MM월 dd일");
+        for(int i = -12; i <= 12; i++) {
+            c.setTime(date);
+            c.add(Calendar.DAY_OF_MONTH, i);
+            builder.addOption(format.format(c.getTime()), schoolData.getName() + ":" + c.getTimeInMillis());
+        }
+        builder.setRequiredRange(0, 1);
+        builder.setPlaceholder(format.format(cal.getTime()));
+
         event.deferReply(false).addEmbeds(getRiceEmbed(schoolData, year, month, day, RiceType.values()))
                 .addActionRow(
+                        builder.build()
+                ).addActionRow(
                         Button.primary(createId(event.getUser().getIdLong(), "rice", schoolData.getName(), c1.getTimeInMillis()), Emoji.fromUnicode("U+2B05")),
                         Button.primary(createId(event.getUser().getIdLong(), "rice", schoolData.getName(), c2.getTimeInMillis()), Emoji.fromUnicode("U+27A1"))
                 ).queue();

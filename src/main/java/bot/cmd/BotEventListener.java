@@ -2,6 +2,7 @@ package bot.cmd;
 
 import bot.cmd.buttons.RiceButton;
 import bot.cmd.commands.*;
+import bot.cmd.selects.RiceSelects;
 import bot.utils.InteractionIdParser;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -36,6 +37,7 @@ public class BotEventListener extends ListenerAdapter {
 
         buttons.put("rice", new RiceButton());
 
+        selects.put("rice", new RiceSelects());
         updateCommand();
     }
 
