@@ -97,6 +97,7 @@ public class RiceCommand implements BotCommand {
             }
         } else {
             builder.setDescription("앗! 이날은 급식이 아에 없나 봐요!\n\n달력을 확인해 보세요. 이날이 휴일은 아닌가요?\n혹은 재량휴업이나 방학같이 급식을 제공하지 않는 날일 수도 있어요.");
+            done = true;
         }
 
         if(done) {
