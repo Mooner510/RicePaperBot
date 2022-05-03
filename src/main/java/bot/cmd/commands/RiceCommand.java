@@ -20,10 +20,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
-import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
 import static bot.Main.schools;
+import static bot.Main.sortedSchools;
 import static bot.cmd.BotEventListener.createId;
 import static bot.utils.DB.getSchool;
 import static bot.utils.Json.*;
@@ -36,7 +36,15 @@ public class RiceCommand implements BotCommand {
     }
 
     private static String gguk(String s){
-        return s.replace("<br/>", "\n").replaceAll("\\(([^(^)]+)\\)", "").replaceAll("([.*\\-0-9]+)", "");
+        s = s.replace("<br/>", "\n").replaceAll("\\(([^(^)]+)\\)", "").replaceAll("([.*\\-/#]+)", "");
+        while(true) {
+            char c = s.charAt(s.length() - 1);
+            if(c >= 33 && c <= 126) {
+                s = s.substring(0, s.length() - 1);
+            } else {
+                return s;
+            }
+        }
     }
 
     public enum RiceType {
@@ -85,7 +93,6 @@ public class RiceCommand implements BotCommand {
             int length = array.length();
             for (int i = 0; i < length; i++) {
                 JSONObject json = array.getJSONObject(i);
-                System.out.println(json.getString("DDISH_NM"));
                 index.put(json.getString("MMEAL_SC_NM"), gguk(json.getString("DDISH_NM")));
             }
 
@@ -161,10 +168,11 @@ public class RiceCommand implements BotCommand {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void onComplete(CommandAutoCompleteInteractionEvent event) {
-        HashSet<String> strings = new HashSet<>(schools.keySet());
+        ArrayList<String> strings = (ArrayList<String>) sortedSchools.clone();
         strings.removeIf(s -> !s.startsWith(event.getFocusedOption().getValue()));
-        HashSet<Command.Choice> choices = new HashSet<>();
+        ArrayList<Command.Choice> choices = new ArrayList<>();
         for (String s : strings) {
             if(choices.size() >= 24) break;
             choices.add(new Command.Choice(s, s));

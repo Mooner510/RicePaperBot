@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import javax.security.auth.login.LoginException;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -21,6 +22,7 @@ public class Main {
     public static BotEventListener commandListener;
 
     public static HashMap<String, SchoolData> schools;
+    public static ArrayList<String> sortedSchools;
 
     public static void queueLog(String name, User user, String log) {
         try(
@@ -55,6 +57,9 @@ public class Main {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
+
+        sortedSchools = new ArrayList<>(schools.keySet());
+        sortedSchools.sort(String::compareTo);
 
         try {
             jda = JDABuilder.createLight(args[0], GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGE_REACTIONS, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_VOICE_STATES)

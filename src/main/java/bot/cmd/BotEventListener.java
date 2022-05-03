@@ -34,6 +34,8 @@ public class BotEventListener extends ListenerAdapter {
         commands.put("rice", new RiceCommand());
         commands.put("setschool", new SetSchoolCommand());
         commands.put("setnotify", new SetNotifyCommand());
+        commands.put("help", new HelpCommand());
+        commands.put("ranice", new RandomRiceCommand());
 
         buttons.put("rice", new RiceButton());
 
@@ -60,8 +62,15 @@ public class BotEventListener extends ListenerAdapter {
         return new InteractionIdParser(Long.parseLong(v1[0]), v2[0], v3);
     }
 
+    public HashMap<Long, Long> commandDelay = new HashMap<>();
+
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
+        long time = commandDelay.getOrDefault(event.getUser().getIdLong(), 0L);
+        if(time + 1000 >= System.currentTimeMillis()) {
+            event.deferReply(true).setContent("잠시 멈춰요! 천천히좀 해줘요;;").queue();
+            return;
+        }
         String id;
         if(commands.containsKey(id = event.getName())) {
             commands.get(id).onCommand(event);
