@@ -1,5 +1,6 @@
 package bot.cmd.commands;
 
+import bot.Main;
 import bot.SchoolData;
 import bot.cmd.BotCommand;
 import bot.utils.BotColor;
@@ -15,6 +16,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import java.util.HashSet;
 
 import static bot.Main.schools;
+import static bot.utils.DB.getSchool;
 
 public class SetSchoolCommand implements BotCommand {
     @Override
@@ -31,6 +33,13 @@ public class SetSchoolCommand implements BotCommand {
         if((err = DB.setSchool(event.getUser().getIdLong(), s)) != null) {
             EmbedBuilder builder = new EmbedBuilder();
             builder.setTitle("무언가 문제가 있다!").setDescription("오류 발생! `" + err + "`").setColor(BotColor.FAIL);
+            event.deferReply(false).addEmbeds(builder.build()).queue();
+            return;
+        }
+
+        if(!schools.containsKey(s)) {
+            EmbedBuilder builder = new EmbedBuilder();
+            builder.setTitle("어머! 그 학교는 대체 어디죠?").setDescription("설마 새로운 학교를 만들 생각은 아닌거죠?\n참고로 학교 이름은 완전한 이름으로 부탁드려요.").setColor(BotColor.FAIL);
             event.deferReply(false).addEmbeds(builder.build()).queue();
             return;
         }

@@ -5,7 +5,14 @@ import bot.cmd.commands.RiceCommand;
 import bot.scheduler.task.RiceTask;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Channel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.security.auth.login.LoginException;
@@ -14,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.StringJoiner;
 
 import static bot.scheduler.task.RiceTask.send;
 
@@ -24,16 +32,53 @@ public class Main {
     public static HashMap<String, SchoolData> schools;
     public static ArrayList<String> sortedSchools;
 
-    public static void queueLog(String name, User user, String log) {
+    public static <T extends Event> void queueLog(User user, Channel textChannel, T obj) {
+        String tag = null;
+        String s = null;
+        if(obj instanceof SlashCommandInteractionEvent o) {
+            StringJoiner joiner = new StringJoiner(" ");
+            for (OptionMapping option : o.getOptions()) {
+                switch (option.getType()) {
+                    case STRING -> joiner.add(option.getName() + ":" + option.getAsString());
+                    case INTEGER -> joiner.add(option.getName() + ":" + option.getAsInt());
+                    case BOOLEAN -> joiner.add(option.getName() + ":" + option.getAsBoolean());
+                }
+            }
+            s = "/" + o.getName() + " " + joiner;
+            tag = "SlashCommand";
+        } else if(obj instanceof ButtonInteractionEvent o) {
+            s = "\"" + o.getButton().getLabel() + "\" " + o.getButton().getId();
+            tag = "ButtonClick";
+        } else if(obj instanceof SelectMenuInteractionEvent o) {
+            StringJoiner joiner = new StringJoiner(" ");
+            for (SelectOption option : o.getSelectedOptions()) {
+                joiner.add(option.getLabel());
+            }
+            s = joiner.toString();
+            tag = "SelectMenuClick";
+        }
+
+        if(tag == null || s == null) return;
+
         try(
                 FileWriter fw = new FileWriter(new File("src/main/resources", "command.log"), StandardCharsets.UTF_8, true);
-                BufferedWriter bw = new BufferedWriter( fw );
+                BufferedWriter bw = new BufferedWriter( fw )
         ) {
-            bw.write("[" + name + "] " + user.getAsTag() + ": " + log);
+            bw.write("[" + tag + "] " + user.getAsTag() + " (" + user.getIdLong() + ")" + ": " + s);
             bw.newLine();
             bw.flush();
         }catch ( IOException e ) {
             e.printStackTrace();
+        }
+
+        String s1 = s.isEmpty() ? "" : ("\n> " + s);
+        switch (textChannel.getType()) {
+            case TEXT ->
+                    jda.getTextChannelById(970930218103631902L)
+                            .sendMessage("**[ " + tag + " ]** \\#Channel:" + textChannel.getAsMention() + " <" + textChannel.getIdLong() + ">\n" + user.getAsTag() + " " + user.getAsMention() + " <" + user.getIdLong() + ">" + s1).queue();
+            case PRIVATE ->
+                    jda.getTextChannelById(970930218103631902L)
+                            .sendMessage("**[ " + tag + " ]** \\#Channel:DM\n" + user.getAsTag() + " " + user.getAsMention() + s1).queue();
         }
     }
 

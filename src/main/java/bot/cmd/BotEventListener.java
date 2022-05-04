@@ -67,14 +67,18 @@ public class BotEventListener extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         long time = commandDelay.getOrDefault(event.getUser().getIdLong(), 0L);
-        if(time + 1000 >= System.currentTimeMillis()) {
+        long l = System.currentTimeMillis();
+        if(time + 2000 >= l) {
             event.deferReply(true).setContent("잠시 멈춰요! 천천히좀 해줘요;;").queue();
+            commandDelay.put(event.getUser().getIdLong(), l);
             return;
+        } else {
+            commandDelay.put(event.getUser().getIdLong(), l);
         }
         String id;
         if(commands.containsKey(id = event.getName())) {
             commands.get(id).onCommand(event);
-            queueLog("SlashCommand", event.getUser(), id);
+            queueLog(event.getUser(), event.getChannel(), event);
         }
     }
 
@@ -93,7 +97,7 @@ public class BotEventListener extends ListenerAdapter {
             InteractionIdParser parser = parseId(id);
             if (parser.compare(event.getUser())) {
                 buttons.get(parser.getCmd()).onClick(event, parser.getArguments());
-                queueLog("ButtonInteract", event.getUser(), id);
+                queueLog(event.getUser(), event.getChannel(), event);
             }
         }
     }
@@ -104,6 +108,7 @@ public class BotEventListener extends ListenerAdapter {
         if(id != null) {
             id = id.split(":")[0];
             selects.get(id).onSelect(event);
+            queueLog(event.getUser(), event.getChannel(), event);
         }
     }
 }

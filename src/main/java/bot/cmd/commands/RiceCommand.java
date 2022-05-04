@@ -19,10 +19,10 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static bot.Main.schools;
 import static bot.Main.sortedSchools;
 import static bot.cmd.BotEventListener.createId;
 import static bot.utils.DB.getSchool;
@@ -36,15 +36,21 @@ public class RiceCommand implements BotCommand {
     }
 
     private static String gguk(String s){
-        s = s.replace("<br/>", "\n").replaceAll("\\(([^(^)]+)\\)", "").replaceAll("([.*\\-/#]+)", "");
-        while(true) {
-            char c = s.charAt(s.length() - 1);
-            if(c >= 33 && c <= 126) {
-                s = s.substring(0, s.length() - 1);
-            } else {
-                return s;
+        String[] strings = s.split("<br/>");
+        int v = strings.length;
+        for (int i = 0; i < v; i++) {
+            strings[i] = strings[i].replaceAll("\\(([^(^)]+)\\)", "").replaceAll("([.*\\-]+)", "");
+            if(strings[i].length() <= 1) continue;
+            while(true) {
+                char b = strings[i].charAt(strings[i].length() - 1);
+                if(b >= 32 && b <= 126) {
+                    strings[i] = strings[i].substring(0, strings[i].length() - 1);
+                } else {
+                    break;
+                }
             }
         }
+        return String.join("\n", strings);
     }
 
     public enum RiceType {
@@ -93,7 +99,7 @@ public class RiceCommand implements BotCommand {
             int length = array.length();
             for (int i = 0; i < length; i++) {
                 JSONObject json = array.getJSONObject(i);
-                index.put(json.getString("MMEAL_SC_NM"), gguk(json.getString("DDISH_NM")));
+                index.put(json.getString("MMEAL_SC_NM"), json.getString("DDISH_NM"));
             }
 
             for (String s : babs) {
@@ -101,7 +107,7 @@ public class RiceCommand implements BotCommand {
                 if(data == null) {
                     builder.addField(s, "급식이 없어요!", false);
                 } else {
-                    builder.addField(s, index.get(s), false);
+                    builder.addField(s, gguk(index.get(s)), false);
                     done = true;
                 }
             }
@@ -122,12 +128,21 @@ public class RiceCommand implements BotCommand {
     public void onCommand(SlashCommandInteractionEvent event) {
         SchoolData schoolData;
         OptionMapping s = event.getOption("학교명");
-        if(s != null) schoolData = Main.schools.get(s.getAsString());
-        else schoolData = getSchool(event.getUser().getIdLong());
+
+        if(s == null) {
+            if((schoolData = getSchool(event.getUser().getIdLong())) == null) {
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setTitle("어머! 당신의 학교는 어디인가요?").setDescription("빠른 급식 명령어(학교를 입력하지 않음)를 사용하시려면 학교를 등록해주세요\n`/setschool`명령어를 통해 학교를 등록할 수 있습니다!").setColor(BotColor.FAIL);
+                event.deferReply(false).addEmbeds(builder.build()).queue();
+                return;
+            }
+        } else {
+            schoolData = Main.schools.get(s.getAsString());
+        }
 
         if(schoolData == null) {
             EmbedBuilder builder = new EmbedBuilder();
-            builder.setTitle("어머! 당신의 학교는 어디인가요?").setDescription("빠른 급식 명령어(학교를 입력하지 않음)를 사용하시려면 학교를 등록해주세요\n`/setschool`명령어를 통해 학교를 등록할 수 있습니다!").setColor(BotColor.FAIL);
+            builder.setTitle("어머! 그 학교는 대체 어디죠?").setDescription("설마 새로운 학교를 만들 생각은 아닌거죠?\n참고로 학교 이름은 완전한 이름으로 부탁드려요.").setColor(BotColor.FAIL);
             event.deferReply(false).addEmbeds(builder.build()).queue();
             return;
         }
