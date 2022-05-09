@@ -76,8 +76,8 @@ public class Main {
             builder.appendDescription("\n\nClicked: **" + joiner + "**");
         }
 
-        builder.addField("User", user.getAsTag() + (user.isBot()?" (Bot)":""), false);
-        builder.addField("User ID", user.getId(), false);
+        builder.addField("User", user.getAsTag() + (user.isBot()?" (Bot)":""), true);
+        builder.addField("User ID", user.getId(), true);
 
         switch (textChannel.getType()) {
             case TEXT, NEWS, STAGE, GUILD_NEWS_THREAD, GUILD_PUBLIC_THREAD, GUILD_PRIVATE_THREAD, UNKNOWN -> {
