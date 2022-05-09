@@ -96,7 +96,7 @@ public class BotEventListener extends ListenerAdapter {
         if(id != null) {
             InteractionIdParser parser = parseId(id);
             if (parser.compare(event.getUser())) {
-                buttons.get(parser.getCmd()).onClick(event, parser.getArguments());
+                buttons.get(parser.cmd()).onClick(event, parser.arguments());
                 queueLog(event.getUser(), event.getChannel(), event);
             }
         }
