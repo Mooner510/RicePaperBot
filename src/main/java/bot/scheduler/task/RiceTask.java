@@ -12,76 +12,52 @@ import static bot.Main.jda;
 public class RiceTask {
     private final Timer timer;
 
-    public RiceTask() {
-        timer = new Timer();
-        TimerTask task1 = new TimerTask() {
-            @Override
-            public void run() {
-                send(RiceCommand.RiceType.BREAKFAST);
-            }
-        };
-
-        TimerTask task2 = new TimerTask() {
-            @Override
-            public void run() {
-                send(RiceCommand.RiceType.LUNCH);
-            }
-        };
-
-        TimerTask task3 = new TimerTask() {
-            @Override
-            public void run() {
-                send(RiceCommand.RiceType.DINNER);
-            }
-        };
+    private static Calendar next(RiceCommand.RiceType riceType) {
         Date date = new Date();
         long cur = System.currentTimeMillis();
 
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
         cal.setTime(date);
-        System.out.println("Today: " + cal.getTime());
-
-        cal.set(Calendar.HOUR_OF_DAY, 7);
-        cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
-
-        System.out.println("Breakfast Date: " + cal.getTime());
-        if(cal.getTimeInMillis() < cur) {
-            System.out.println("+ Add Breakfast Date");
-            cal.add(Calendar.DATE, 1);
+        switch (riceType) {
+            case BREAKFAST -> {
+                cal.set(Calendar.HOUR_OF_DAY, 7);
+                cal.set(Calendar.MINUTE, 0);
+            }
+            case LUNCH -> {
+                cal.set(Calendar.HOUR_OF_DAY, 11);
+                cal.set(Calendar.MINUTE, 30);
+            }
+            case DINNER -> {
+                cal.set(Calendar.HOUR_OF_DAY, 17);
+                cal.set(Calendar.MINUTE, 0);
+            }
         }
 
-        timer.scheduleAtFixedRate(task1, cal.getTime(), 86400000);
-        System.out.println("Breakfast Queue: " + cal.getTime());
+        if(cal.getTimeInMillis() < cur) cal.add(Calendar.DATE, 1);
 
-        cal.setTime(date);
-        cal.set(Calendar.HOUR_OF_DAY, 11);
-        cal.set(Calendar.MINUTE, 30);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        System.out.println("Lunch Date: " + cal.getTime());
-        if(cal.getTimeInMillis() < cur) {
-            System.out.println("+ Add Lunch Date");
-            cal.add(Calendar.DATE, 1);
+        return cal;
+    }
+
+    public RiceTask() {
+        timer = new Timer();
+
+        for (final RiceCommand.RiceType type : RiceCommand.RiceType.values()) {
+            Calendar calender = next(type);
+            Date date = calender.getTime();
+            timer.scheduleAtFixedRate(
+                    new TimerTask() {
+                        @Override
+                        public void run() {
+                            Calendar cal = next(type);
+                            send(type, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+                        }
+                    },
+                    date, 86400000
+            );
+            System.out.println(type.getTag() + " Queue: " + date);
         }
-
-        timer.scheduleAtFixedRate(task2, cal.getTime(), 86400000);
-        System.out.println("Lunch Queue: " + cal.getTime());
-
-        cal.setTime(date);
-        cal.set(Calendar.HOUR_OF_DAY, 17);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        System.out.println("Dinner Date: " + cal.getTime());
-        if(cal.getTimeInMillis() < cur) {
-            System.out.println("+ Add Dinner Date");
-            cal.add(Calendar.DATE, 1);
-        }
-
-        timer.scheduleAtFixedRate(task3, cal.getTime(), 86400000);
-        System.out.println("Dinner Queue: " + cal.getTime());
     }
 
     public void unregister() {
