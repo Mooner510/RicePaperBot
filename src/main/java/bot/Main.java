@@ -44,12 +44,21 @@ public class Main {
             }
             builder.setTitle("Executed Slash Command: /" + o.getName());
             builder.appendDescription("Parameters:");
-            builder.appendDescription("> " + joiner);
+            if(joiner.length() <= 0) {
+                builder.appendDescription("\n> null");
+            } else {
+                builder.appendDescription("\n> " + joiner);
+            }
         } else if(obj instanceof ButtonInteractionEvent o) {
             InteractionIdParser parser = parseId(Objects.requireNonNull(o.getButton().getId()));
             builder.setTitle("Clicked Button: /" + parser.cmd());
             builder.appendDescription("Parameters:");
-            builder.appendDescription("> " + String.join(" ", parser.arguments()));
+            String s = String.join(" ", parser.arguments());
+            if(s.isEmpty()) {
+                builder.appendDescription("\n> null");
+            } else {
+                builder.appendDescription("\n> " + s);
+            }
         } else if(obj instanceof SelectMenuInteractionEvent o) {
             InteractionIdParser parser = parseId(Objects.requireNonNull(o.getComponent().getId()));
             StringJoiner joiner = new StringJoiner(" ");
@@ -57,9 +66,14 @@ public class Main {
                 joiner.add(option.getLabel());
             }
             builder.setTitle("Clicked Select Menu: /" + parser.cmd());
-            builder.appendDescription("Parameters:");
-            builder.appendDescription("> " + String.join(" ", parser.arguments()));
-            builder.appendDescription("\nClicked: **" + joiner + "**");
+            builder.appendDescription("Parameters: ");
+            String s = String.join(" ", parser.arguments());
+            if(s.isEmpty()) {
+                builder.appendDescription("\n> null");
+            } else {
+                builder.appendDescription("\n> " + s);
+            }
+            builder.appendDescription("\n\nClicked: **" + joiner + "**");
         }
 
         builder.addField("User", user.getAsTag() + (user.isBot()?" (Bot)":""), false);
