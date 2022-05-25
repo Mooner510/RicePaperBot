@@ -25,6 +25,8 @@ import static bot.cmd.BotEventListener.parseId;
 import static bot.scheduler.task.RiceTask.send;
 
 public class Main {
+    public static final String version = "v1.3.0";
+
     public static JDA jda;
     public static BotEventListener commandListener;
 
@@ -51,9 +53,9 @@ public class Main {
             }
         } else if(obj instanceof ButtonInteractionEvent o) {
             InteractionIdParser parser = parseId(Objects.requireNonNull(o.getButton().getId()));
-            builder.setTitle("Clicked Button: /" + parser.cmd());
+            builder.setTitle("Clicked Button: /" + parser.getCmd());
             builder.appendDescription("Parameters:");
-            String s = String.join(" ", parser.arguments());
+            String s = String.join(" ", parser.getArguments());
             if(s.isEmpty()) {
                 builder.appendDescription("\n> null");
             } else {
@@ -65,9 +67,9 @@ public class Main {
             for (SelectOption option : o.getSelectedOptions()) {
                 joiner.add(option.getLabel());
             }
-            builder.setTitle("Clicked Select Menu: /" + parser.cmd());
+            builder.setTitle("Clicked Select Menu: /" + parser.getCmd());
             builder.appendDescription("Parameters: ");
-            String s = String.join(" ", parser.arguments());
+            String s = String.join(" ", parser.getArguments());
             if(s.isEmpty()) {
                 builder.appendDescription("\n> null");
             } else {
@@ -128,6 +130,8 @@ public class Main {
         }
         commandListener.register();
         commandListener.updateCommand();
+
+        jda.getPresence().setPresence(Activity.competing(version), true);
 
         RiceTask riceTask = new RiceTask();
 

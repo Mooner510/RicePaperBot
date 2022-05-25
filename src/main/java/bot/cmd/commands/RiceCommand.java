@@ -24,7 +24,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static bot.Main.sortedSchools;
+import static bot.Main.version;
 import static bot.cmd.BotEventListener.createId;
+import static bot.utils.BotUtils.parseString;
 import static bot.utils.DB.getSchool;
 import static bot.utils.Json.*;
 
@@ -81,7 +83,8 @@ public class RiceCommand implements BotCommand {
 
         JSONObject object = readJsonFromUrl(url);
         EmbedBuilder builder = new EmbedBuilder();
-        builder.setTitle(currentDate(month, day) + " 급식표 :rice:").setColor(BotColor.RICE);
+        builder.setTitle(currentDate(month, day) + " 급식표 :rice:").setColor(BotColor.RICE)
+                .appendDescription("`영양 정보(단위: g): [탄수화물/단백질/지방]`");
 
         HashSet<String> babs = new HashSet<>();
 
@@ -95,11 +98,22 @@ public class RiceCommand implements BotCommand {
             final JSONArray array = object.getJSONArray("mealServiceDietInfo").getJSONObject(1).getJSONArray("row");
 
             HashMap<String, String> index = new HashMap<>();
+            HashMap<String, String> calInfo = new HashMap<>();
+            HashMap<String, String> ntrInfo = new HashMap<>();
 
             int length = array.length();
             for (int i = 0; i < length; i++) {
                 JSONObject json = array.getJSONObject(i);
-                index.put(json.getString("MMEAL_SC_NM"), json.getString("DDISH_NM"));
+                String tag = json.getString("MMEAL_SC_NM");
+                index.put(tag, json.getString("DDISH_NM"));
+                calInfo.put(tag, json.getString("CAL_INFO"));
+                String s = json.getString("NTR_INFO").replace("<br/>", ":").replace(" ", "");
+                String[] split = s.split(":");
+                ntrInfo.put(tag, new StringJoiner("/")
+                        .add(parseString(Double.parseDouble(split[1]), 1, true))
+                        .add(parseString(Double.parseDouble(split[3]), 1, true))
+                        .add(parseString(Double.parseDouble(split[5]), 1, true))
+                        .toString());
             }
 
             for (String s : babs) {
@@ -107,7 +121,7 @@ public class RiceCommand implements BotCommand {
                 if(data == null) {
                     builder.addField(s, "급식이 없어요!", false);
                 } else {
-                    builder.addField(s, gguk(index.get(s)), false);
+                    builder.addField(s + " - " + calInfo.get(s) + " [" + ntrInfo.get(s) + "]", gguk(index.get(s)), false);
                     done = true;
                 }
             }
@@ -117,7 +131,7 @@ public class RiceCommand implements BotCommand {
         }
 
         if(done) {
-            builder.setFooter("학교명: " + schoolData.getName());
+            builder.setFooter("학교명: " + schoolData.getName() + " [" + version+"]");
             return builder.build();
         } else {
             return null;
@@ -163,7 +177,7 @@ public class RiceCommand implements BotCommand {
         c2.add(Calendar.DAY_OF_MONTH, 1);
 
         Calendar c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
-        SelectMenu.Builder builder = SelectMenu.create("rice");
+        SelectMenu.Builder builder = SelectMenu.create(createId(event.getUser().getIdLong(), "rice", "select"));
         SimpleDateFormat format = new SimpleDateFormat("yyyy년 MM월 dd일");
         for(int i = -12; i <= 12; i++) {
             c.setTime(date);

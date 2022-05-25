@@ -1,7 +1,5 @@
 package bot.cmd.commands;
 
-import bot.Main;
-import bot.SchoolData;
 import bot.cmd.BotCommand;
 import bot.utils.BotColor;
 import bot.utils.DB;
@@ -16,7 +14,6 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import java.util.HashSet;
 
 import static bot.Main.schools;
-import static bot.utils.DB.getSchool;
 
 public class SetSchoolCommand implements BotCommand {
     @Override
