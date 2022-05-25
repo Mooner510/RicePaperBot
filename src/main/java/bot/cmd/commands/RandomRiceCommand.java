@@ -43,7 +43,7 @@ public class RandomRiceCommand implements BotCommand {
         c2.add(Calendar.DAY_OF_MONTH, 1);
 
         Calendar c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
-        SelectMenu.Builder builder = SelectMenu.create("rice");
+        SelectMenu.Builder builder = SelectMenu.create(createId(event.getUser().getIdLong(), "rice", "select"));
         SimpleDateFormat format = new SimpleDateFormat("yyyy년 MM월 dd일");
         for(int i = -12; i <= 12; i++) {
             c.setTime(date);

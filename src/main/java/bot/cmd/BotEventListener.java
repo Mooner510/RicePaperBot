@@ -96,7 +96,7 @@ public class BotEventListener extends ListenerAdapter {
         if(id != null) {
             InteractionIdParser parser = parseId(id);
             if (parser.compare(event.getUser())) {
-                buttons.get(parser.cmd()).onClick(event, parser.arguments());
+                buttons.get(parser.getCmd()).onClick(event, parser.getArguments());
                 queueLog(event.getUser(), event.getChannel(), event);
             }
         }
@@ -104,11 +104,13 @@ public class BotEventListener extends ListenerAdapter {
 
     @Override
     public void onSelectMenuInteraction(@NotNull SelectMenuInteractionEvent event) {
-        String id = event.getSelectMenu().getId();
+        String id = event.getComponent().getId();
         if(id != null) {
-            id = id.split(":")[0];
-            selects.get(id).onSelect(event);
-            queueLog(event.getUser(), event.getChannel(), event);
+            InteractionIdParser parser = parseId(id);
+            if (parser.compare(event.getUser())) {
+                selects.get(parser.getCmd()).onSelect(event);
+                queueLog(event.getUser(), event.getChannel(), event);
+            }
         }
     }
 }
