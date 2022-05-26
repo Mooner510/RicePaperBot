@@ -2,8 +2,11 @@ package bot.scheduler.task;
 
 import bot.SchoolData;
 import bot.cmd.commands.RiceCommand;
+import bot.utils.BotColor;
 import bot.utils.DB;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.util.*;
 
@@ -94,21 +97,35 @@ public class RiceTask {
         cal.setTime(date);
 
         HashSet<Long> notices = DB.getNotices();
+        EmbedBuilder builder = new EmbedBuilder().setTitle("Queued Query - " + type).setColor(BotColor.SUCCESS)
+                .appendDescription("For **" + notices.size() + "** users.\n");
+        StringJoiner done = new StringJoiner("\n- ");
+        StringJoiner fail = new StringJoiner("\n- ");
+
         for (Long id : notices) {
             jda.retrieveUserById(id).queue(user -> {
                 SchoolData schoolData;
                 if (user == null || (schoolData = DB.getSchool(id)) == null) {
+                    if(user == null) fail.add("id: " + id);
+                    else fail.add(user.getAsTag());
                     System.out.println(id);
                 } else {
                     user.openPrivateChannel().queue(privateChannel -> {
                         if (privateChannel.canTalk()) {
                             MessageEmbed embed = RiceCommand.getRiceEmbed(schoolData, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), type);
                             if(embed != null) privateChannel.sendMessageEmbeds(embed).queue();
+                            done.add(user.getAsTag());
+                        } else {
+                            fail.add(user.getAsTag());
                         }
                     });
                 }
             });
         }
+        builder.addField("Success", "```yml\n" + done + "```", false);
+        builder.addField("Failed", "```yml\n" + fail + "```", false);
+        TextChannel channel = jda.getTextChannelById(979213156712853514L);
+        if(channel != null) channel.sendMessageEmbeds(builder.build()).queue();
     }
 
     public static void send(RiceCommand.RiceType type, int year, int month, int day) {

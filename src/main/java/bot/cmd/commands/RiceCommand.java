@@ -19,7 +19,6 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
