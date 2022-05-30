@@ -36,6 +36,7 @@ public class BotEventListener extends ListenerAdapter {
         commands.put("setnotify", new SetNotifyCommand());
         commands.put("help", new HelpCommand());
         commands.put("ranice", new RandomRiceCommand());
+        commands.put("changes", new ChangesCommand());
 
         buttons.put("rice", new RiceButton());
 

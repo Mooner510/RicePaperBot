@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static bot.Main.jda;
 
@@ -92,40 +93,46 @@ public class RiceTask {
     }
 
     public static void send(RiceCommand.RiceType type) {
-        Date date = new Date();
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
-        cal.setTime(date);
+        new Thread(() -> {
+            Date date = new Date();
+            Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
+            cal.setTime(date);
 
-        HashSet<Long> notices = DB.getNotices();
-        EmbedBuilder builder = new EmbedBuilder().setTitle("Queued Query - " + type).setColor(BotColor.SUCCESS)
-                .appendDescription("For **" + notices.size() + "** users.\n");
-        StringJoiner done = new StringJoiner("\n- ");
-        StringJoiner fail = new StringJoiner("\n- ");
-
-        for (Long id : notices) {
-            jda.retrieveUserById(id).queue(user -> {
-                SchoolData schoolData;
-                if (user == null || (schoolData = DB.getSchool(id)) == null) {
-                    if(user == null) fail.add("id: " + id);
-                    else fail.add(user.getAsTag());
-                    System.out.println(id);
-                } else {
-                    user.openPrivateChannel().queue(privateChannel -> {
-                        if (privateChannel.canTalk()) {
-                            MessageEmbed embed = RiceCommand.getRiceEmbed(schoolData, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), type);
-                            if(embed != null) privateChannel.sendMessageEmbeds(embed).queue();
-                            done.add(user.getAsTag());
-                        } else {
-                            fail.add(user.getAsTag());
-                        }
-                    });
-                }
-            });
-        }
-        builder.addField("Success", "```yml\n" + done + "```", false);
-        builder.addField("Failed", "```yml\n" + fail + "```", false);
-        TextChannel channel = jda.getTextChannelById(979213156712853514L);
-        if(channel != null) channel.sendMessageEmbeds(builder.build()).queue();
+            HashSet<Long> notices = DB.getNotices();
+            int noticeSize = notices.size();
+            EmbedBuilder builder = new EmbedBuilder().setTitle("Queued Query - " + type).setColor(BotColor.SUCCESS)
+                    .appendDescription("For **" + noticeSize + "** users.\n");
+            StringJoiner done = new StringJoiner("\n- ");
+            StringJoiner fail = new StringJoiner("\n- ");
+            AtomicInteger integer = new AtomicInteger();
+            for (Long id : notices) {
+                jda.retrieveUserById(id).queue(user -> {
+                    SchoolData schoolData;
+                    if (user == null || (schoolData = DB.getSchool(id)) == null) {
+                        if(user == null) fail.add("id: " + id);
+                        else fail.add(user.getAsTag());
+                        System.out.println(id);
+                        integer.incrementAndGet();
+                    } else {
+                        MessageEmbed embed = RiceCommand.getRiceEmbed(schoolData, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), type);
+                        user.openPrivateChannel().queue(privateChannel -> {
+                            if (privateChannel.canTalk()) {
+                                if(embed != null) privateChannel.sendMessageEmbeds(embed).queue();
+                                done.add(user.getAsTag());
+                            } else {
+                                fail.add(user.getAsTag());
+                            }
+                            integer.incrementAndGet();
+                        });
+                    }
+                });
+            }
+            while(integer.get() < noticeSize) {}
+            if(done.length() > 0) builder.addField("Success", "```yml\n- " + done + "\n```", false);
+            if(fail.length() > 0) builder.addField("Failed", "```yml\n- " + fail + "\n```", false);
+            TextChannel channel = jda.getTextChannelById(979213156712853514L);
+            if(channel != null) channel.sendMessageEmbeds(builder.build()).queue();
+        }).start();
     }
 
     public static void send(RiceCommand.RiceType type, int year, int month, int day) {
@@ -136,9 +143,9 @@ public class RiceTask {
                 if (user == null || (schoolData = DB.getSchool(id)) == null) {
                     System.out.println(id);
                 } else {
+                    MessageEmbed embed = RiceCommand.getRiceEmbed(schoolData, year, month, day, type);
                     user.openPrivateChannel().queue(privateChannel -> {
                         if (privateChannel.canTalk()) {
-                            MessageEmbed embed = RiceCommand.getRiceEmbed(schoolData, year, month, day, type);
                             if(embed != null) privateChannel.sendMessageEmbeds(embed).queue();
                         }
                     });

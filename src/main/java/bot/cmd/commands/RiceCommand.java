@@ -82,7 +82,7 @@ public class RiceCommand implements BotCommand {
 
         JSONObject object = readJsonFromUrl(url);
         EmbedBuilder builder = new EmbedBuilder();
-        builder.setTitle(currentDate(month, day) + " 급식표 :rice:").setColor(BotColor.RICE)
+        builder.setTitle(currentDate(year, month, day) + " 급식표 :rice:").setColor(BotColor.RICE)
                 .appendDescription("`영양 정보(단위: g): [탄수화물/단백질/지방]`");
 
         HashSet<String> babs = new HashSet<>();

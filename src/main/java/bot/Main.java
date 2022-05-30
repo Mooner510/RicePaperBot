@@ -25,7 +25,7 @@ import static bot.cmd.BotEventListener.parseId;
 import static bot.scheduler.task.RiceTask.send;
 
 public class Main {
-    public static final String version = "v1.3.1";
+    public static final String version = "v1.3.2";
 
     public static JDA jda;
     public static BotEventListener commandListener;
@@ -122,7 +122,7 @@ public class Main {
         sortedSchools.sort(String::compareTo);
 
         try {
-            jda = JDABuilder.createLight(args[0], GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGE_REACTIONS, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_VOICE_STATES)
+            jda = JDABuilder.create(args[0], Arrays.asList(GatewayIntent.values()))
                     .addEventListeners(commandListener = new BotEventListener())
                     .build();
         } catch (LoginException e) {
