@@ -87,7 +87,7 @@ public class SetNotifyCommand implements BotCommand {
                     return;
                 }
 
-                OptionMapping channelOption = event.getOption("적용 채널");
+                OptionMapping channelOption = event.getOption("채널");
                 OptionMapping schoolOption = event.getOption("학교명");
                 builder = new EmbedBuilder();
 
