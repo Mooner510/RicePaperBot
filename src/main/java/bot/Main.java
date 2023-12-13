@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
@@ -23,10 +22,11 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+import static bot.cmd.BotEventListener.parseId;
 import static bot.scheduler.task.RiceTask.send;
 
 public class Main {
-    public static final String version = "v1.3.2";
+    public static final String version = "v1.4";
 
     public static JDA jda;
     public static BotEventListener commandListener;
@@ -53,7 +53,7 @@ public class Main {
                 builder.appendDescription("\n> " + joiner);
             }
         } else if (obj instanceof ButtonInteractionEvent o) {
-            InteractionIdParser parser = BotEventListener.parseId(Objects.requireNonNull(o.getButton().getId()));
+            InteractionIdParser parser = parseId(Objects.requireNonNull(o.getButton().getId()));
             builder.setTitle("Clicked Button: /" + parser.getCmd());
             builder.appendDescription("Parameters:");
             String s = String.join(" ", parser.getArguments());
@@ -63,7 +63,7 @@ public class Main {
                 builder.appendDescription("\n> " + s);
             }
         } else if (obj instanceof StringSelectInteractionEvent o) {
-            InteractionIdParser parser = BotEventListener.parseId(Objects.requireNonNull(o.getComponent().getId()));
+            InteractionIdParser parser = parseId(Objects.requireNonNull(o.getComponent().getId()));
             StringJoiner joiner = new StringJoiner(" ");
             for (SelectOption option : o.getSelectedOptions()) {
                 joiner.add(option.getLabel());
@@ -71,7 +71,7 @@ public class Main {
             builder.setTitle("Clicked Select Menu: /" + parser.getCmd());
             builder.appendDescription("Parameters: ");
             String s = String.join(" ", parser.getArguments());
-            if (s.isEmpty()) {
+            if(s.isEmpty()) {
                 builder.appendDescription("\n> null");
             } else {
                 builder.appendDescription("\n> " + s);
@@ -139,18 +139,15 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         tag:
         while (true) {
-            switch (scanner.nextLine()) {
+            switch (scanner.nextLine().toLowerCase()) {
                 case "breakfast":
-                case "BREAKFAST":
-                    RiceTask.send(RiceCommand.RiceType.BREAKFAST);
+                    send(RiceCommand.RiceType.BREAKFAST);
                     break;
                 case "dinner":
-                case "DINNER":
-                    RiceTask.send(RiceCommand.RiceType.DINNER);
+                    send(RiceCommand.RiceType.DINNER);
                     break;
                 case "lunch":
-                case "LUNCH":
-                    RiceTask.send(RiceCommand.RiceType.LUNCH);
+                    send(RiceCommand.RiceType.LUNCH);
                     break;
                 case "":
                 case "s":
