@@ -104,20 +104,20 @@ public class SetNotifyCommand implements BotCommand {
                 if (channelOption != null && schoolOption != null) {
                     TextChannel textChannel = channelOption.getAsChannel().asTextChannel();
                     String school = schoolOption.getAsString();
-                    builder.appendDescription("채널 변경: 앞으로 " + textChannel.getAsMention() + "에서 알려드릴게요!\n\n");
-                    builder.appendDescription("학교 변경: 앞으로 `" + school + "`의 급식 정보로 알려드릴게요!\n\n");
+                    builder.appendDescription("채널 변경: 앞으로 " + textChannel.getAsMention() + "에서 알려드릴게요!\n");
+                    builder.appendDescription("학교 변경: 앞으로 `" + school + "`의 급식 정보로 알려드릴게요!");
                     DB.setGuildNotice(guildId, textChannel.getIdLong(), school);
                 } else {
                     if (DB.checkGuildNotice(guildId)) {
                         if (channelOption != null) {
                             TextChannel textChannel = channelOption.getAsChannel().asTextChannel();
-                            builder.appendDescription("채널 변경: 앞으로 " + textChannel.getAsMention() + "에서 알려드릴게요!\n\n");
+                            builder.appendDescription("채널 변경: 앞으로 " + textChannel.getAsMention() + "에서 알려드릴게요!");
                             DB.setGuildNoticeOnlyChannel(guildId, textChannel.getIdLong());
                         }
 
                         if (schoolOption != null) {
                             String school = schoolOption.getAsString();
-                            builder.appendDescription("학교 변경: 앞으로 `" + school + "`의 급식 정보로 알려드릴게요!\n\n");
+                            builder.appendDescription("학교 변경: 앞으로 `" + school + "`의 급식 정보로 알려드릴게요!");
                             DB.setGuildNoticeOnlySchool(guildId, school);
                         }
                     } else {
