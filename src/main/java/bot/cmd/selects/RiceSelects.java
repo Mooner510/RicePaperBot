@@ -5,9 +5,7 @@ import bot.cmd.BotSelectMenu;
 import bot.cmd.commands.RiceCommand;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
 import java.text.SimpleDateFormat;
@@ -23,7 +21,7 @@ public class RiceSelects implements BotSelectMenu {
 
     @Override
     public void onSelect(StringSelectInteractionEvent event) {
-        if ((event.getInteraction().getSelectedOptions().size() <= 0)) {
+        if ((event.getInteraction().getSelectedOptions().isEmpty())) {
             return;
         }
         String[] split = event.getInteraction().getSelectedOptions().get(0).getValue().split(":");

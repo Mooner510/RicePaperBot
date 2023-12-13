@@ -5,9 +5,7 @@ import bot.SchoolData;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
-import java.util.AbstractMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 public class DB {
     public static SchoolData getSchool(long userId) {
@@ -84,22 +82,27 @@ public class DB {
         }
     }
 
-    public static HashSet<Map.Entry<Long, Long>> getGuildNotices() {
-        HashSet<Map.Entry<Long, Long>> notices = new HashSet<>();
+    public record GuildNotice(long getGuildId, long getChannelId, String getSchool) {
+    }
+
+    public static List<GuildNotice> getGuildNotices() {
         try (
                 Connection c = DriverManager.getConnection("jdbc:sqlite:src/main/resources/DB.db");
                 ResultSet r = c.prepareStatement("SELECT * FROM GuildNotice").executeQuery()
         ) {
+            r.last();
+            List<GuildNotice> notices = new ArrayList<>(r.getRow());
+            r.beforeFirst();
             while (r.next()) {
                 if (r.getBoolean("notice")) {
-                    notices.add(new AbstractMap.SimpleImmutableEntry<>(r.getLong("guild_id"), r.getLong("channel_id")));
+                    notices.add(new GuildNotice(r.getLong("guild_id"), r.getLong("channel_id"), r.getString("school")));
                 }
             }
             return notices;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return notices;
+        return Collections.emptyList();
     }
 
     public static boolean checkGuildNotice(long guildId) {

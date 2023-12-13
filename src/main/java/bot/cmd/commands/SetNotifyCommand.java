@@ -88,9 +88,11 @@ public class SetNotifyCommand implements BotCommand {
                 OptionMapping schoolOption = event.getOption("학교명");
                 builder = new EmbedBuilder();
 
+                long guildId = event.getGuild().getIdLong();
                 if (channelOption == null && schoolOption == null) {
-                    DB.revokeGuildNotice(event.getGuild().getIdLong());
-                    builder.setTitle("알림을 비활성화 했어요!").setDescription("더 이상 급식시간이 다가올 때마다 이 서버에 알려드리지 않아요.").setColor(BotColor.SUCCESS);
+                    DB.revokeGuildNotice(guildId);
+                    builder.setTitle("알림을 비활성화 했어요!").setDescription("더 이상 급식시간이 다가올 때마다 이 서버에 알려드리지 않아요.").setColor(BotColor.FAIL);
+                    event.deferReply(false).addEmbeds(builder.build()).queue();
                     return;
                 }
 
@@ -101,18 +103,24 @@ public class SetNotifyCommand implements BotCommand {
                     String school = schoolOption.getAsString();
                     builder.appendDescription("채널 변경: 앞으로 " + textChannel.getAsMention() + "에서 알려드릴게요!\n\n");
                     builder.appendDescription("학교 변경: 앞으로 `" + school + "`의 급식 정보로 알려드릴게요!\n\n");
-                    DB.setGuildNotice(event.getGuild().getIdLong(), textChannel.getIdLong(), school);
+                    DB.setGuildNotice(guildId, textChannel.getIdLong(), school);
                 } else {
-                    if (channelOption != null) {
-                        TextChannel textChannel = channelOption.getAsChannel().asTextChannel();
-                        builder.appendDescription("채널 변경: 앞으로 " + textChannel.getAsMention() + "에서 알려드릴게요!\n\n");
-                        DB.setGuildNoticeOnlyChannel(event.getGuild().getIdLong(), textChannel.getIdLong());
-                    }
+                    if (DB.checkGuildNotice(guildId)) {
+                        if (channelOption != null) {
+                            TextChannel textChannel = channelOption.getAsChannel().asTextChannel();
+                            builder.appendDescription("채널 변경: 앞으로 " + textChannel.getAsMention() + "에서 알려드릴게요!\n\n");
+                            DB.setGuildNoticeOnlyChannel(guildId, textChannel.getIdLong());
+                        }
 
-                    if (schoolOption != null) {
-                        String school = schoolOption.getAsString();
-                        builder.appendDescription("학교 변경: 앞으로 `" + school + "`의 급식 정보로 알려드릴게요!\n\n");
-                        DB.setGuildNoticeOnlySchool(event.getGuild().getIdLong(), school);
+                        if (schoolOption != null) {
+                            String school = schoolOption.getAsString();
+                            builder.appendDescription("학교 변경: 앞으로 `" + school + "`의 급식 정보로 알려드릴게요!\n\n");
+                            DB.setGuildNoticeOnlySchool(guildId, school);
+                        }
+                    } else {
+                        builder.setTitle("이런!")
+                                .setDescription("처음 서버 알림을 설정 한다면 채널과 학교를 모두 입력해 주셔야 해요.\n그 후에 채널과 학교를 수정할 수 있어요.")
+                                .setColor(BotColor.FAIL);
                     }
                 }
                 event.deferReply(false).addEmbeds(builder.build()).queue();
