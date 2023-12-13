@@ -7,31 +7,31 @@ import java.util.ArrayList;
 public class UpdateManager {
     public static void main(String[] args) {
         ArrayList<String> strings = new ArrayList<>();
-        try(
+        try (
                 FileReader rw = new FileReader("C:\\Users\\DSM2022\\Downloads\\I hate python.txt", StandardCharsets.UTF_8);
-                BufferedReader br = new BufferedReader( rw )
+                BufferedReader br = new BufferedReader(rw)
         ) {
             String readLine;
-            while( ( readLine =  br.readLine()) != null ){
+            while ((readLine = br.readLine()) != null) {
                 System.out.println(readLine);
                 strings.add(readLine.split(",")[3] + "," + readLine.split(",")[0] + "," + readLine.split(",")[2]);
             }
-        } catch ( IOException e ) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
 //        new File("src/main/resources", "schools.txt").deleteOnExit();
 
-        try(
+        try (
                 FileWriter fw = new FileWriter(new File("src/main/resources", "schools.txt"), StandardCharsets.UTF_8, true);
-                BufferedWriter bw = new BufferedWriter( fw );
+                BufferedWriter bw = new BufferedWriter(fw);
         ) {
             for (String s : strings) {
                 bw.write(s);
                 bw.newLine();
             }
             bw.flush();
-        }catch ( IOException e ) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 //

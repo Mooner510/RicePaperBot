@@ -10,11 +10,11 @@ import java.util.HashSet;
 
 public class DB {
     public static SchoolData getSchool(long userId) {
-        try(
+        try (
                 Connection c = DriverManager.getConnection("jdbc:sqlite:src/main/resources/DB.db");
                 ResultSet r = c.prepareStatement("SELECT * FROM GuildSchool WHERE id=" + userId).executeQuery()
         ) {
-            if(r.next()) {
+            if (r.next()) {
                 return Main.schools.get(r.getString("school"));
             } else {
                 return null;
@@ -34,7 +34,7 @@ public class DB {
         ) {
             s2.setString(1, school);
             s2.setLong(2, userId);
-            if(s2.executeUpdate() == 0) {
+            if (s2.executeUpdate() == 0) {
                 s.setLong(1, userId);
                 s.setString(2, school);
                 s.executeUpdate();
@@ -48,12 +48,12 @@ public class DB {
 
     public static HashSet<Long> getNotices() {
         HashSet<Long> notices = new HashSet<>();
-        try(
+        try (
                 Connection c = DriverManager.getConnection("jdbc:sqlite:src/main/resources/DB.db");
                 ResultSet r = c.prepareStatement("SELECT * FROM RiceNotice").executeQuery()
         ) {
             while (r.next()) {
-                if(r.getBoolean("notice")) {
+                if (r.getBoolean("notice")) {
                     notices.add(r.getLong("id"));
                 }
             }
@@ -73,7 +73,7 @@ public class DB {
         ) {
             s2.setBoolean(1, notice);
             s2.setLong(2, userId);
-            if(s2.executeUpdate() == 0) {
+            if (s2.executeUpdate() == 0) {
                 s.setLong(1, userId);
                 s.setBoolean(2, notice);
                 s.executeUpdate();

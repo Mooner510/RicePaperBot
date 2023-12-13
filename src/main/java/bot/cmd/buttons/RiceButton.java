@@ -1,19 +1,18 @@
 package bot.cmd.buttons;
 
-import bot.SchoolData;
 import bot.cmd.BotButton;
+import bot.cmd.BotEventListener;
+import bot.SchoolData;
 import bot.cmd.commands.RiceCommand;
-import net.dv8tion.jda.api.entities.Emoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static bot.Main.schools;
-import static bot.cmd.BotEventListener.createId;
 import static bot.cmd.commands.RiceCommand.getRiceEmbed;
 
 public class RiceButton implements BotButton {
@@ -31,9 +30,9 @@ public class RiceButton implements BotButton {
         c2.add(Calendar.DAY_OF_MONTH, 1);
 
         Calendar c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
-        SelectMenu.Builder builder = SelectMenu.create(createId(event.getUser().getIdLong(), "rice", "select"));
+        StringSelectMenu.Builder builder = StringSelectMenu.create(BotEventListener.createId(event.getUser().getIdLong(), "rice", "select"));
         SimpleDateFormat format = new SimpleDateFormat("yyyy년 MM월 dd일");
-        for(int i = -12; i <= 12; i++) {
+        for (int i = -12; i <= 12; i++) {
             c.setTime(date);
             c.add(Calendar.DAY_OF_MONTH, i);
             builder.addOption(format.format(c.getTime()), schoolData.getName() + ":" + c.getTimeInMillis());
@@ -41,13 +40,10 @@ public class RiceButton implements BotButton {
         builder.setPlaceholder(format.format(date));
 
         event.deferEdit().setEmbeds(getRiceEmbed(schoolData, Long.parseLong(arguments[1]), RiceCommand.RiceType.values()))
-                .setActionRows(
-                        ActionRow.of(
-                            builder.build()
-                        ), ActionRow.of(
-                                Button.primary(createId(event.getUser().getIdLong(), "rice", schoolData.getName(), c1.getTimeInMillis()), Emoji.fromUnicode("U+2B05")),
-                                Button.primary(createId(event.getUser().getIdLong(), "rice", schoolData.getName(), c2.getTimeInMillis()), Emoji.fromUnicode("U+27A1"))
-                        )
+                .setActionRow(
+                        builder.build(),
+                        Button.primary(BotEventListener.createId(event.getUser().getIdLong(), "rice", schoolData.getName(), c1.getTimeInMillis()), Emoji.fromUnicode("U+2B05")),
+                        Button.primary(BotEventListener.createId(event.getUser().getIdLong(), "rice", schoolData.getName(), c2.getTimeInMillis()), Emoji.fromUnicode("U+27A1"))
                 ).queue();
     }
 }

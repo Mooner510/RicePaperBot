@@ -9,9 +9,6 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.sql.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.StringJoiner;
 
 public class ChangesCommand implements BotCommand {
@@ -30,7 +27,7 @@ public class ChangesCommand implements BotCommand {
         String[] split = message.split("\n");
         builder.setTitle(split[0], data.getString("html_url"));
         StringJoiner joiner = new StringJoiner("\n");
-        for (int i = 1; i < split.length; i++) if(!split[i].isEmpty()) joiner.add(split[i]);
+        for (int i = 1; i < split.length; i++) if (!split[i].isEmpty()) joiner.add(split[i]);
         builder.setDescription(joiner.toString());
         JSONObject committer = commit.getJSONObject("committer");
         builder.setFooter(committer.getString("name") + " " + committer.getString("date").replace("T", " ").replace("Z", ""));

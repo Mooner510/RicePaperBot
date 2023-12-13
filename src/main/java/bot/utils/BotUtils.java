@@ -7,6 +7,7 @@ import java.util.List;
 
 public class BotUtils {
     private static final List<String> suffix = List.of("", "k", "M", "B", "T", "Q");
+
     public static String numberTic(double value, int a) {
         if (value < 1) {
             return (int) Math.round(value) + "";
@@ -28,10 +29,10 @@ public class BotUtils {
     }
 
     public static String parseIfInt(double value, boolean comma) {
-        if(value >= Integer.MAX_VALUE) {
+        if (value >= Integer.MAX_VALUE) {
             return numberTic(value, 3);
         }
-        if(comma) {
+        if (comma) {
             if (Math.floor(value) == value) {
                 return commaNumber((int) Math.floor(value));
             }

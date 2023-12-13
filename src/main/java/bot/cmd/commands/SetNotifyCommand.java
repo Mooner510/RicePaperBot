@@ -1,9 +1,9 @@
 package bot.cmd.commands;
 
-import bot.SchoolData;
 import bot.cmd.BotCommand;
 import bot.utils.BotColor;
 import bot.utils.DB;
+import bot.SchoolData;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -25,7 +25,7 @@ public class SetNotifyCommand implements BotCommand {
     public void onCommand(SlashCommandInteractionEvent event) {
         String s = event.getOption("설정").getAsString();
         SchoolData schoolData = DB.getSchool(event.getUser().getIdLong());
-        if(schoolData == null) {
+        if (schoolData == null) {
             EmbedBuilder builder = new EmbedBuilder();
             builder.setTitle("당신이 다니는 학교는 어디인가요?").setDescription("`/setschool`명령어로 먼저 학교를 설정해줘요!\n처음 보는 학교의 급식을 보내드릴 순 없잖아요?").setColor(BotColor.FAIL);
             event.deferReply(false).addEmbeds(builder.build()).queue();
@@ -35,7 +35,7 @@ public class SetNotifyCommand implements BotCommand {
         boolean b = s.equals("true");
 
         String err;
-        if((err = DB.setNotices(event.getUser().getIdLong(), b)) != null) {
+        if ((err = DB.setNotices(event.getUser().getIdLong(), b)) != null) {
             EmbedBuilder builder = new EmbedBuilder();
             builder.setTitle("무언가 문제가 있다!").setDescription("오류 발생! `" + err + "`").setColor(BotColor.FAIL);
             event.deferReply(false).addEmbeds(builder.build()).queue();
@@ -43,12 +43,12 @@ public class SetNotifyCommand implements BotCommand {
         }
 
         EmbedBuilder builder = new EmbedBuilder();
-        if(b) {
+        if (b) {
             builder.setTitle("알림을 활성화 했어요!").setDescription(
                     """
                             앞으로 급식시간이 다가올 때마다 DM으로 알려줘요.
                             DM에 메시지를 보낼 수 있도록 서버 설정 및 개인 보안 설정을 바꿔야 해요!
-                            
+                                                        
                             학교마다 급식 시간이 다르기 때문에 대략적인 시간보다 일찍 알려드린답니다!
 
                             **조식**: 7시
