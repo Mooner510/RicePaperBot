@@ -43,7 +43,7 @@ public class ChangesCommand implements BotCommand, BotSelectMenu {
             EmbedBuilder builder = getEmbedBuilder(json);
             StringSelectMenu.Builder versionBuilder = StringSelectMenu.create("version");
             json.forEach(v -> versionBuilder.addOption(v.getValue()[0], v.getKey().getString("sha")));
-            event.deferReply(false).addEmbeds(builder.build()).queue();
+            event.deferReply(false).addActionRow(versionBuilder.build()).addEmbeds(builder.build()).queue();
         } else {
             event.deferReply(false).setContent("이런! 최근 업데이트 내용을 찾기 어렵네요. 어디로 사라진걸까요?").queue();
         }
