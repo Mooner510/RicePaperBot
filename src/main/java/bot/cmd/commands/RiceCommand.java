@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
@@ -137,10 +138,14 @@ public class RiceCommand implements BotCommand, BotSelectMenu, BotButton {
         builder.setPlaceholder(format.format(date));
 
         event.deferEdit().setEmbeds(getRiceEmbed(schoolData, Long.parseLong(split[1]), RiceType.values()))
-                .setActionRow(
-                        builder.build(),
-                        Button.primary(createId(event.getUser().getIdLong(), "rice", schoolData.getName(), c1.getTimeInMillis()), Emoji.fromUnicode("U+2B05")),
-                        Button.primary(createId(event.getUser().getIdLong(), "rice", schoolData.getName(), c2.getTimeInMillis()), Emoji.fromUnicode("U+27A1"))
+                .setComponents(
+                        ActionRow.of(
+                                builder.build()
+                        ),
+                        ActionRow.of(
+                                Button.primary(createId(event.getUser().getIdLong(), "rice", schoolData.getName(), c1.getTimeInMillis()), Emoji.fromUnicode("U+2B05")),
+                                Button.primary(createId(event.getUser().getIdLong(), "rice", schoolData.getName(), c2.getTimeInMillis()), Emoji.fromUnicode("U+27A1"))
+                        )
                 ).queue();
     }
 
@@ -167,10 +172,14 @@ public class RiceCommand implements BotCommand, BotSelectMenu, BotButton {
         builder.setPlaceholder(format.format(date));
 
         event.deferEdit().setEmbeds(getRiceEmbed(schoolData, Long.parseLong(arguments[1]), RiceType.values()))
-                .setActionRow(
-                        builder.build(),
-                        Button.primary(BotEventListener.createId(event.getUser().getIdLong(), "rice", schoolData.getName(), c1.getTimeInMillis()), Emoji.fromUnicode("U+2B05")),
-                        Button.primary(BotEventListener.createId(event.getUser().getIdLong(), "rice", schoolData.getName(), c2.getTimeInMillis()), Emoji.fromUnicode("U+27A1"))
+                .setComponents(
+                        ActionRow.of(
+                                builder.build()
+                        ),
+                        ActionRow.of(
+                                Button.primary(BotEventListener.createId(event.getUser().getIdLong(), "rice", schoolData.getName(), c1.getTimeInMillis()), Emoji.fromUnicode("U+2B05")),
+                                Button.primary(BotEventListener.createId(event.getUser().getIdLong(), "rice", schoolData.getName(), c2.getTimeInMillis()), Emoji.fromUnicode("U+27A1"))
+                        )
                 ).queue();
     }
 }

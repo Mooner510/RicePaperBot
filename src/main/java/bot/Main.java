@@ -26,7 +26,7 @@ import static bot.cmd.BotEventListener.parseId;
 import static bot.scheduler.task.RiceTask.send;
 
 public class Main {
-    public static final String version = "v1.4.5";
+    public static final String version = "v1.4.6";
 
     public static JDA jda;
     public static BotEventListener commandListener;
