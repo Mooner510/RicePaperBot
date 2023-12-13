@@ -43,7 +43,7 @@ public class ChangesCommand implements BotCommand, BotSelectMenu {
         if (!json.isEmpty()) {
             EmbedBuilder builder = getEmbedBuilder(json);
             StringSelectMenu.Builder versionBuilder = StringSelectMenu.create(
-                    BotEventListener.createId(event.getUser().getIdLong(), "changes")
+                    BotEventListener.createId(event.getUser().getIdLong(), "changes", "select")
             );
             json.forEach(v -> versionBuilder.addOption(v.getValue()[0], v.getKey().getString("sha")));
             event.deferReply(false).addActionRow(versionBuilder.build()).addEmbeds(builder.build()).queue();
