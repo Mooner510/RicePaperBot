@@ -1,6 +1,7 @@
 package bot.cmd.commands;
 
 import bot.cmd.BotCommand;
+import bot.cmd.BotEventListener;
 import bot.cmd.BotSelectMenu;
 import bot.utils.Json;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -41,7 +42,9 @@ public class ChangesCommand implements BotCommand, BotSelectMenu {
                 .toList();
         if (!json.isEmpty()) {
             EmbedBuilder builder = getEmbedBuilder(json);
-            StringSelectMenu.Builder versionBuilder = StringSelectMenu.create("version");
+            StringSelectMenu.Builder versionBuilder = StringSelectMenu.create(
+                    BotEventListener.createId(event.getUser().getIdLong(), "changes")
+            );
             json.forEach(v -> versionBuilder.addOption(v.getValue()[0], v.getKey().getString("sha")));
             event.deferReply(false).addActionRow(versionBuilder.build()).addEmbeds(builder.build()).queue();
         } else {
