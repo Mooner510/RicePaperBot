@@ -79,7 +79,7 @@ public class Main {
             builder.appendDescription("\n\nClicked: **" + joiner + "**");
         }
 
-        builder.addField("User", user.getAsTag() + (user.isBot() ? " (Bot)" : ""), true);
+        builder.addField("User", user.getGlobalName() + (user.isBot() ? " (Bot)" : ""), true);
         builder.addField("User ID", user.getId(), true);
 
         switch (textChannel.getType()) {
@@ -147,11 +147,9 @@ public class Main {
                     break;
                 case "":
                 case "s":
-                case "S":
                 case "ㄴ":
                 case "stop":
                 case "ㄴ새ㅔ":
-                case "STOP":
                     jda.cancelRequests();
                     jda.shutdown();
                     riceTask.unregister();

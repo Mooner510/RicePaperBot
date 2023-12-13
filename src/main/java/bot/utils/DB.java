@@ -27,8 +27,8 @@ public class DB {
     public static String setSchool(long userId, @NotNull String school) {
         try (
                 Connection c = DriverManager.getConnection("jdbc:sqlite:src/main/resources/DB.db");
-                PreparedStatement s = c.prepareStatement("INSERT INTO GuildSchool VALUES(?, ?)");
-                PreparedStatement s2 = c.prepareStatement("UPDATE GuildSchool SET school=? WHERE id=?")
+                PreparedStatement s2 = c.prepareStatement("UPDATE GuildSchool SET school=? WHERE id=?");
+                PreparedStatement s = c.prepareStatement("INSERT INTO GuildSchool VALUES(?, ?)")
         ) {
             s2.setString(1, school);
             s2.setLong(2, userId);
@@ -65,8 +65,8 @@ public class DB {
     public static String setNotices(long userId, boolean notice) {
         try (
                 Connection c = DriverManager.getConnection("jdbc:sqlite:src/main/resources/DB.db");
-                PreparedStatement s = c.prepareStatement("INSERT INTO RiceNotice VALUES(?, ?)");
-                PreparedStatement s2 = c.prepareStatement("UPDATE RiceNotice SET notice=? WHERE id=?")
+                PreparedStatement s2 = c.prepareStatement("UPDATE RiceNotice SET notice=? WHERE id=?");
+                PreparedStatement s = c.prepareStatement("INSERT INTO RiceNotice VALUES(?, ?)")
         ) {
             s2.setBoolean(1, notice);
             s2.setLong(2, userId);
@@ -128,16 +128,16 @@ public class DB {
     public static void setGuildNotice(long guildId, long channelId, String school) {
         try (
                 Connection c = DriverManager.getConnection("jdbc:sqlite:src/main/resources/DB.db");
-                PreparedStatement s = c.prepareStatement("INSERT INTO GuildNotice VALUES(?, ?, ?)");
-                PreparedStatement s2 = c.prepareStatement("UPDATE GuildNotice SET channel_id=?, school=? WHERE guild_id=?")
+                PreparedStatement s2 = c.prepareStatement("UPDATE GuildNotice SET channel_id=?, school=? WHERE guild_id=?");
+                PreparedStatement s = c.prepareStatement("INSERT INTO GuildNotice VALUES(?, ?, ?)")
         ) {
-            s2.setLong(1, guildId);
-            s2.setLong(2, channelId);
+            s2.setLong(1, channelId);
             s2.setString(2, school);
+            s2.setLong(2, guildId);
             if (s2.executeUpdate() == 0) {
-                s.setLong(1, channelId);
-                s.setString(2, school);
-                s.setLong(3, guildId);
+                s.setLong(1, guildId);
+                s.setLong(2, channelId);
+                s.setString(3, school);
                 s.executeUpdate();
             }
         } catch (SQLException e) {
