@@ -85,14 +85,12 @@ public class DB {
     public record GuildNotice(long getGuildId, long getChannelId, String getSchool) {
     }
 
-    public static List<GuildNotice> getGuildNotices() {
+    public static Set<GuildNotice> getGuildNotices() {
+        Set<GuildNotice> notices = new HashSet<>();
         try (
                 Connection c = DriverManager.getConnection("jdbc:sqlite:src/main/resources/DB.db");
                 ResultSet r = c.prepareStatement("SELECT * FROM GuildNotice").executeQuery()
         ) {
-            r.last();
-            List<GuildNotice> notices = new ArrayList<>(r.getRow());
-            r.beforeFirst();
             while (r.next()) {
                 if (r.getBoolean("notice")) {
                     notices.add(new GuildNotice(r.getLong("guild_id"), r.getLong("channel_id"), r.getString("school")));
@@ -102,7 +100,7 @@ public class DB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return Collections.emptyList();
+        return Collections.emptySet();
     }
 
     public static boolean checkGuildNotice(long guildId) {
