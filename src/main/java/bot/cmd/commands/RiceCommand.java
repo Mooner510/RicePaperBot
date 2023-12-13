@@ -1,140 +1,41 @@
 package bot.cmd.commands;
 
 import bot.Main;
+import bot.cmd.BotButton;
 import bot.cmd.BotCommand;
 import bot.cmd.BotEventListener;
+import bot.cmd.BotSelectMenu;
+import bot.cmd.util.rice.Rice;
+import bot.cmd.util.rice.RiceType;
 import bot.utils.BotColor;
-import bot.utils.BotUtils;
 import bot.utils.DB;
-import bot.utils.Json;
 import bot.SchoolData;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static bot.utils.BotUtils.parseString;
+import static bot.Main.schools;
+import static bot.cmd.BotEventListener.createId;
+import static bot.cmd.util.rice.Rice.getRiceEmbed;
 
-public class RiceCommand implements BotCommand {
+public class RiceCommand implements BotCommand, BotSelectMenu, BotButton {
     @Override
     public SlashCommandData getCommand() {
         return Commands.slash("rice", "오늘의 급식은 뭐가 나올까?")
                 .addOption(OptionType.STRING, "학교명", "급식을 보고 싶은 학교를 선택해줘요!", false, true);
-    }
-
-    private static String gguk(String s) {
-        String[] strings = s.split("<br/>");
-        int v = strings.length;
-        for (int i = 0; i < v; i++) {
-            strings[i] = strings[i].replaceAll("\\(([^(^)]+)\\)", "").replaceAll("([.*\\-]+)", "");
-            if (strings[i].length() <= 1) continue;
-            while (true) {
-                char b = strings[i].charAt(strings[i].length() - 1);
-                if (b >= 32 && b <= 126) {
-                    strings[i] = strings[i].substring(0, strings[i].length() - 1);
-                } else {
-                    break;
-                }
-            }
-        }
-        return String.join("\n", strings);
-    }
-
-    public enum RiceType {
-        BREAKFAST("조식"), LUNCH("중식"), DINNER("석식");
-
-        private final String tag;
-
-        RiceType(String s) {
-            tag = s;
-        }
-
-        public String getTag() {
-            return tag;
-        }
-    }
-
-    public static MessageEmbed getRiceEmbed(SchoolData schoolData, long time, RiceType... type) {
-        Date date = new Date(time);
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
-        cal.setTime(date);
-
-        return getRiceEmbed(schoolData, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), type);
-    }
-
-    public static MessageEmbed getRiceEmbed(SchoolData schoolData, int year, int month, int day, RiceType... type) {
-        String url = Json.urlFormat(schoolData, year, month, day);
-        System.out.println(url);
-
-        JSONObject object = Json.readJsonFromUrl(url);
-        EmbedBuilder builder = new EmbedBuilder();
-        builder.setTitle(Json.currentDate(year, month, day) + " 급식표 :rice:").setColor(BotColor.RICE)
-                .appendDescription("`영양 정보(단위: g): [탄수화물/단백질/지방]`");
-
-        HashSet<String> babs = new HashSet<>();
-
-        for (RiceType riceType : type) {
-            babs.add(riceType.getTag());
-        }
-
-        boolean done = false;
-
-        if (object.has("mealServiceDietInfo")) {
-            final JSONArray array = object.getJSONArray("mealServiceDietInfo").getJSONObject(1).getJSONArray("row");
-
-            HashMap<String, String> index = new HashMap<>();
-            HashMap<String, String> calInfo = new HashMap<>();
-            HashMap<String, String> ntrInfo = new HashMap<>();
-
-            int length = array.length();
-            for (int i = 0; i < length; i++) {
-                JSONObject json = array.getJSONObject(i);
-                String tag = json.getString("MMEAL_SC_NM");
-                index.put(tag, json.getString("DDISH_NM"));
-                calInfo.put(tag, json.getString("CAL_INFO"));
-                String s = json.getString("NTR_INFO").replace("<br/>", ":").replace(" ", "");
-                String[] split = s.split(":");
-                ntrInfo.put(tag, new StringJoiner("/")
-                        .add(BotUtils.parseString(Double.parseDouble(split[1]), 1, true))
-                        .add(BotUtils.parseString(Double.parseDouble(split[3]), 1, true))
-                        .add(BotUtils.parseString(Double.parseDouble(split[5]), 1, true))
-                        .toString());
-            }
-
-            for (String s : babs) {
-                String data = index.get(s);
-                if (data == null) {
-                    builder.addField(s, "급식이 없어요!", false);
-                } else {
-                    builder.addField(s + " - " + calInfo.get(s) + " [" + ntrInfo.get(s) + "]", gguk(index.get(s)), false);
-                    done = true;
-                }
-            }
-        } else {
-            builder.setDescription("앗! 이날은 급식이 아에 없나 봐요!\n\n달력을 확인해 보세요. 이날이 휴일은 아닌가요?\n혹은 재량휴업이나 방학같이 급식을 제공하지 않는 날일 수도 있어요.");
-            done = true;
-        }
-
-        if (done) {
-            builder.setFooter("학교명: " + schoolData.getName() + " [" + Main.version + "]");
-            return builder.build();
-        } else {
-            return null;
-        }
     }
 
     @Override
@@ -186,7 +87,7 @@ public class RiceCommand implements BotCommand {
         builder.setRequiredRange(0, 1);
         builder.setPlaceholder(format.format(cal.getTime()));
 
-        event.deferReply(false).addEmbeds(getRiceEmbed(schoolData, year, month, day, RiceType.values()))
+        event.deferReply(false).addEmbeds(Rice.getRiceEmbed(schoolData, year, month, day, RiceType.values()))
                 .addActionRow(
                         builder.build()
                 ).addActionRow(
@@ -206,5 +107,70 @@ public class RiceCommand implements BotCommand {
             choices.add(new Command.Choice(s, s));
         }
         event.replyChoices(choices).queue();
+    }
+
+    @Override
+    public void onSelect(StringSelectInteractionEvent event) {
+        if ((event.getInteraction().getSelectedOptions().isEmpty())) {
+            return;
+        }
+        String[] split = event.getInteraction().getSelectedOptions().get(0).getValue().split(":");
+        SchoolData schoolData = schools.get(split[0]);
+        Date date = new Date(Long.parseLong(split[1]));
+
+        Calendar c1 = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
+        Calendar c2 = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
+        c1.setTime(date);
+        c1.add(Calendar.DAY_OF_MONTH, -1);
+        c2.setTime(date);
+        c2.add(Calendar.DAY_OF_MONTH, 1);
+
+        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
+        StringSelectMenu.Builder builder = StringSelectMenu.create(createId(event.getUser().getIdLong(), "rice", "select"));
+        SimpleDateFormat format = new SimpleDateFormat("yyyy년 MM월 dd일");
+        for (int i = -12; i <= 12; i++) {
+            c.setTime(date);
+            c.add(Calendar.DAY_OF_MONTH, i);
+            builder.addOption(format.format(c.getTime()), schoolData.getName() + ":" + c.getTimeInMillis());
+        }
+        builder.setRequiredRange(0, 1);
+        builder.setPlaceholder(format.format(date));
+
+        event.deferEdit().setEmbeds(getRiceEmbed(schoolData, Long.parseLong(split[1]), RiceType.values()))
+                .setActionRow(
+                        builder.build(),
+                        Button.primary(createId(event.getUser().getIdLong(), "rice", schoolData.getName(), c1.getTimeInMillis()), Emoji.fromUnicode("U+2B05")),
+                        Button.primary(createId(event.getUser().getIdLong(), "rice", schoolData.getName(), c2.getTimeInMillis()), Emoji.fromUnicode("U+27A1"))
+                ).queue();
+    }
+
+    @Override
+    public void onClick(ButtonInteractionEvent event, String[] arguments) {
+        SchoolData schoolData = schools.get(arguments[0]);
+        Date date = new Date(Long.parseLong(arguments[1]));
+
+        Calendar c1 = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
+        Calendar c2 = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
+        c1.setTime(date);
+        c1.add(Calendar.DAY_OF_MONTH, -1);
+        c2.setTime(date);
+        c2.add(Calendar.DAY_OF_MONTH, 1);
+
+        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
+        StringSelectMenu.Builder builder = StringSelectMenu.create(BotEventListener.createId(event.getUser().getIdLong(), "rice", "select"));
+        SimpleDateFormat format = new SimpleDateFormat("yyyy년 MM월 dd일");
+        for (int i = -12; i <= 12; i++) {
+            c.setTime(date);
+            c.add(Calendar.DAY_OF_MONTH, i);
+            builder.addOption(format.format(c.getTime()), schoolData.getName() + ":" + c.getTimeInMillis());
+        }
+        builder.setPlaceholder(format.format(date));
+
+        event.deferEdit().setEmbeds(getRiceEmbed(schoolData, Long.parseLong(arguments[1]), RiceType.values()))
+                .setActionRow(
+                        builder.build(),
+                        Button.primary(BotEventListener.createId(event.getUser().getIdLong(), "rice", schoolData.getName(), c1.getTimeInMillis()), Emoji.fromUnicode("U+2B05")),
+                        Button.primary(BotEventListener.createId(event.getUser().getIdLong(), "rice", schoolData.getName(), c2.getTimeInMillis()), Emoji.fromUnicode("U+27A1"))
+                ).queue();
     }
 }

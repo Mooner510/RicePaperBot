@@ -3,6 +3,7 @@ package bot.cmd.commands;
 import bot.cmd.BotCommand;
 import bot.cmd.BotEventListener;
 import bot.SchoolData;
+import bot.cmd.util.rice.RiceType;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -14,7 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static bot.Main.schools;
-import static bot.cmd.commands.RiceCommand.getRiceEmbed;
+import static bot.cmd.util.rice.Rice.getRiceEmbed;
 
 public class RandomRiceCommand implements BotCommand {
     @Override
@@ -53,7 +54,7 @@ public class RandomRiceCommand implements BotCommand {
         builder.setRequiredRange(0, 1);
         builder.setPlaceholder(format.format(cal.getTime()));
 
-        event.deferReply(false).addEmbeds(getRiceEmbed(schoolData, year, month, day, RiceCommand.RiceType.values()))
+        event.deferReply(false).addEmbeds(getRiceEmbed(schoolData, year, month, day, RiceType.values()))
                 .addActionRow(
                         builder.build()
                 ).addActionRow(

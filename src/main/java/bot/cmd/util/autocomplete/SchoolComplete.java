@@ -1,4 +1,4 @@
-package bot.cmd.autocomplete;
+package bot.cmd.util.autocomplete;
 
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;

@@ -2,7 +2,8 @@ package bot.scheduler.task;
 
 import bot.Main;
 import bot.SchoolData;
-import bot.cmd.commands.RiceCommand;
+import bot.cmd.util.rice.Rice;
+import bot.cmd.util.rice.RiceType;
 import bot.utils.BotColor;
 import bot.utils.DB;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -26,21 +27,21 @@ public class RiceTask {
         TimerTask task1 = new TimerTask() {
             @Override
             public void run() {
-                send(RiceCommand.RiceType.BREAKFAST);
+                send(RiceType.BREAKFAST);
             }
         };
 
         TimerTask task2 = new TimerTask() {
             @Override
             public void run() {
-                send(RiceCommand.RiceType.LUNCH);
+                send(RiceType.LUNCH);
             }
         };
 
         TimerTask task3 = new TimerTask() {
             @Override
             public void run() {
-                send(RiceCommand.RiceType.DINNER);
+                send(RiceType.DINNER);
             }
         };
         Date date = new Date();
@@ -97,7 +98,7 @@ public class RiceTask {
         timer.cancel();
     }
 
-    public static void send(RiceCommand.RiceType type) {
+    public static void send(RiceType type) {
         Date date = new Date();
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
         cal.setTime(date);
@@ -105,7 +106,7 @@ public class RiceTask {
         personalNotice(type, cal);
     }
 
-    public static void guildNotice(RiceCommand.RiceType type, Calendar cal) {
+    public static void guildNotice(RiceType type, Calendar cal) {
         new Thread(() -> {
             List<DB.GuildNotice> notices = DB.getGuildNotices();
             int noticeSize = notices.size();
@@ -130,7 +131,7 @@ public class RiceTask {
                             return;
                         }
                     }
-                    MessageEmbed embed = RiceCommand.getRiceEmbed(schoolData, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), type);
+                    MessageEmbed embed = Rice.getRiceEmbed(schoolData, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), type);
                     if (embed != null) {
                         channel.sendMessageEmbeds(embed).queue();
                         done.incrementAndGet();
@@ -152,7 +153,7 @@ public class RiceTask {
         }).start();
     }
 
-    public static void personalNotice(RiceCommand.RiceType type, Calendar cal) {
+    public static void personalNotice(RiceType type, Calendar cal) {
         new Thread(() -> {
             HashSet<Long> notices = DB.getNotices();
             int noticeSize = notices.size();
@@ -174,7 +175,7 @@ public class RiceTask {
                             System.out.println(id);
                             integer.incrementAndGet();
                         } else {
-                            MessageEmbed embed = RiceCommand.getRiceEmbed(schoolData, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), type);
+                            MessageEmbed embed = Rice.getRiceEmbed(schoolData, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), type);
                             user.openPrivateChannel().queue(privateChannel -> {
                                 if (privateChannel.canTalk()) {
                                     if (embed != null) privateChannel.sendMessageEmbeds(embed).queue();
@@ -197,7 +198,7 @@ public class RiceTask {
         }).start();
     }
 
-    public static void send(RiceCommand.RiceType type, int year, int month, int day) {
+    public static void send(RiceType type, int year, int month, int day) {
         HashSet<Long> notices = DB.getNotices();
         for (Long id : notices) {
             jda.retrieveUserById(id).queue(user -> {
@@ -205,7 +206,7 @@ public class RiceTask {
                 if (user == null || (schoolData = DB.getSchool(id)) == null) {
                     System.out.println(id);
                 } else {
-                    MessageEmbed embed = RiceCommand.getRiceEmbed(schoolData, year, month, day, type);
+                    MessageEmbed embed = Rice.getRiceEmbed(schoolData, year, month, day, type);
                     user.openPrivateChannel().queue(privateChannel -> {
                         if (privateChannel.canTalk()) {
                             if (embed != null) privateChannel.sendMessageEmbeds(embed).queue();

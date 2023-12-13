@@ -1,7 +1,5 @@
 package bot.cmd;
 
-import bot.cmd.selects.RiceSelects;
-import bot.cmd.buttons.RiceButton;
 import bot.cmd.commands.*;
 import bot.utils.InteractionIdParser;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -21,13 +19,9 @@ import static bot.Main.queueLog;
 
 public class BotEventListener extends ListenerAdapter {
     public static HashMap<String, BotCommand> commands;
-    public static HashMap<String, BotButton> buttons;
-    public static HashMap<String, BotSelectMenu> selects;
 
     public BotEventListener() {
         commands = new HashMap<>();
-        buttons = new HashMap<>();
-        selects = new HashMap<>();
     }
 
     public void register() {
@@ -37,10 +31,6 @@ public class BotEventListener extends ListenerAdapter {
         commands.put("help", new HelpCommand());
         commands.put("ranice", new RandomRiceCommand());
         commands.put("changes", new ChangesCommand());
-
-        buttons.put("rice", new RiceButton());
-
-        selects.put("rice", new RiceSelects());
         updateCommand();
     }
 
@@ -97,8 +87,11 @@ public class BotEventListener extends ListenerAdapter {
         if (id != null) {
             InteractionIdParser parser = parseId(id);
             if (parser.compare(event.getUser())) {
-                buttons.get(parser.getCmd()).onClick(event, parser.getArguments());
-                queueLog(event.getUser(), event.getChannel(), event);
+                BotCommand command = commands.get(parser.getCmd());
+                if (command instanceof BotButton button) {
+                    button.onClick(event, parser.getArguments());
+                    queueLog(event.getUser(), event.getChannel(), event);
+                }
             }
         }
     }
@@ -109,8 +102,11 @@ public class BotEventListener extends ListenerAdapter {
         if (id != null) {
             InteractionIdParser parser = parseId(id);
             if (parser.compare(event.getUser())) {
-                selects.get(parser.getCmd()).onSelect(event);
-                queueLog(event.getUser(), event.getChannel(), event);
+                BotCommand command = commands.get(parser.getCmd());
+                if (command instanceof BotSelectMenu menu) {
+                    menu.onSelect(event);
+                    queueLog(event.getUser(), event.getChannel(), event);
+                }
             }
         }
     }

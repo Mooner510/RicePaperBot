@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
-import static bot.cmd.autocomplete.SchoolComplete.schoolComplete;
+import static bot.cmd.util.autocomplete.SchoolComplete.schoolComplete;
 
 public class SetNotifyCommand implements BotCommand {
     @Override

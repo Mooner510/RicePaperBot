@@ -1,8 +1,8 @@
 package bot;
 
 import bot.cmd.BotEventListener;
+import bot.cmd.util.rice.RiceType;
 import bot.scheduler.task.RiceTask;
-import bot.cmd.commands.RiceCommand;
 import bot.utils.InteractionIdParser;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -137,13 +137,13 @@ public class Main {
         while (true) {
             switch (scanner.nextLine().toLowerCase()) {
                 case "breakfast":
-                    send(RiceCommand.RiceType.BREAKFAST);
+                    send(RiceType.BREAKFAST);
                     break;
                 case "dinner":
-                    send(RiceCommand.RiceType.DINNER);
+                    send(RiceType.DINNER);
                     break;
                 case "lunch":
-                    send(RiceCommand.RiceType.LUNCH);
+                    send(RiceType.LUNCH);
                     break;
                 case "":
                 case "s":
