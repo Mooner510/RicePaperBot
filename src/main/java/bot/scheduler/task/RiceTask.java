@@ -108,7 +108,7 @@ public class RiceTask {
 
     public static void guildNotice(RiceType type, Calendar cal) {
         new Thread(() -> {
-            List<DB.GuildNotice> notices = DB.getGuildNotices();
+            Set<DB.GuildNotice> notices = DB.getGuildNotices();
             int noticeSize = notices.size();
             EmbedBuilder builder = new EmbedBuilder().setTitle("Queued Guild Query - " + type).setColor(BotColor.RICE)
                     .appendDescription("For **" + noticeSize + "** users.\n");
@@ -158,7 +158,7 @@ public class RiceTask {
             HashSet<Long> notices = DB.getNotices();
             int noticeSize = notices.size();
             EmbedBuilder builder = new EmbedBuilder().setTitle("Queued Query - " + type).setColor(BotColor.SUCCESS)
-                    .appendDescription("For **" + noticeSize + "** users.\n");
+                    .appendDescription("For **" + noticeSize + "** guilds.\n");
             StringJoiner done = new StringJoiner("\n- ");
             StringJoiner fail = new StringJoiner("\n- ");
             AtomicInteger integer = new AtomicInteger();
