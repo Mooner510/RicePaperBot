@@ -92,9 +92,7 @@ public class DB {
                 ResultSet r = c.prepareStatement("SELECT * FROM GuildNotice").executeQuery()
         ) {
             while (r.next()) {
-                if (r.getBoolean("notice")) {
-                    notices.add(new GuildNotice(r.getLong("guild_id"), r.getLong("channel_id"), r.getString("school")));
-                }
+                notices.add(new GuildNotice(r.getLong("guild_id"), r.getLong("channel_id"), r.getString("school")));
             }
             return notices;
         } catch (SQLException e) {
