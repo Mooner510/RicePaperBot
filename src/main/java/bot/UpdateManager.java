@@ -8,13 +8,14 @@ public class UpdateManager {
     public static void main(String[] args) {
         ArrayList<String> strings = new ArrayList<>();
         try(
-                FileReader rw = new FileReader("C:\\Users\\DSM2022\\Downloads\\I hate python.txt", StandardCharsets.UTF_8);
+                FileReader rw = new FileReader("src/main/resources/학교기본정보_2023년01월31일기준.csv", StandardCharsets.UTF_8);
                 BufferedReader br = new BufferedReader( rw )
         ) {
             String readLine;
             while( ( readLine =  br.readLine()) != null ){
                 System.out.println(readLine);
-                strings.add(readLine.split(",")[3] + "," + readLine.split(",")[0] + "," + readLine.split(",")[2]);
+                String[] split = readLine.split(",");
+                strings.add(split[3] + "," + split[0] + "," + split[2]);
             }
         } catch ( IOException e ) {
             e.printStackTrace();
