@@ -1,7 +1,7 @@
 package bot.cmd;
 
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 
 public interface BotSelectMenu {
-    void onSelect(SelectMenuInteractionEvent event);
+    void onSelect(StringSelectInteractionEvent event);
 }

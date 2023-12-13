@@ -6,10 +6,12 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import org.json.JSONArray;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.StringJoiner;
+import java.util.regex.Pattern;
 
 public class ChangesCommand implements BotCommand {
     @Override
@@ -17,11 +19,31 @@ public class ChangesCommand implements BotCommand {
         return Commands.slash("changes", "마지막으로 봇이 업데이트 된 후 변경사항을 확인합니다!");
     }
 
+    public static Pattern pattern = Pattern.compile("v\\d(\\.\\d+)+ update - .+");
+
     @Override
     public void onCommand(SlashCommandInteractionEvent event) {
+        List<JSONObject> json = Json.readJsonArrayFromUrl("https://api.github.com/repos/Mooner510/RicePaperBot/commits")
+                .toList()
+                .stream()
+                .map(v -> (JSONObject) JSONObject.wrap(v))
+                .filter(v ->
+                        pattern.matcher(v.getJSONObject("commit").getString("message")
+                                .split("\n")[0]).matches()
+                )
+                .toList();
+        if (!json.isEmpty()) {
+            EmbedBuilder builder = getEmbedBuilder(json);
+            event.deferReply(false).addEmbeds(builder.build()).queue();
+        } else {
+            event.deferReply(false).setContent("이런! 최근 업데이트 내용을 찾기 어렵네요. 어디로 사라진걸까요?").queue();
+        }
+    }
+
+    @NotNull
+    private static EmbedBuilder getEmbedBuilder(List<JSONObject> json) {
         EmbedBuilder builder = new EmbedBuilder();
-        JSONArray json = Json.readJsonArrayFromUrl("https://api.github.com/repos/Mooner510/RicePaperBot/commits");
-        JSONObject data = json.getJSONObject(0);
+        JSONObject data = json.get(0);
         JSONObject commit = data.getJSONObject("commit");
         String message = commit.getString("message");
         String[] split = message.split("\n");
@@ -31,6 +53,6 @@ public class ChangesCommand implements BotCommand {
         builder.setDescription(joiner.toString());
         JSONObject committer = commit.getJSONObject("committer");
         builder.setFooter(committer.getString("name") + " " + committer.getString("date").replace("T", " ").replace("Z", ""));
-        event.deferReply(false).addEmbeds(builder.build()).queue();
+        return builder;
     }
 }

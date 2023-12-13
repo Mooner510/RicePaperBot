@@ -4,7 +4,6 @@ import bot.Main;
 import bot.SchoolData;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.CheckReturnValue;
 import java.sql.*;
 import java.util.AbstractMap;
 import java.util.HashSet;
@@ -27,7 +26,6 @@ public class DB {
         return null;
     }
 
-    @CheckReturnValue
     public static String setSchool(long userId, @NotNull String school) {
         try (
                 Connection c = DriverManager.getConnection("jdbc:sqlite:src/main/resources/DB.db");
@@ -66,7 +64,6 @@ public class DB {
         return notices;
     }
 
-    @CheckReturnValue
     public static String setNotices(long userId, boolean notice) {
         try (
                 Connection c = DriverManager.getConnection("jdbc:sqlite:src/main/resources/DB.db");
@@ -129,7 +126,6 @@ public class DB {
         }
     }
 
-    @CheckReturnValue
     public static void setGuildNotice(long guildId, long channelId, String school) {
         try (
                 Connection c = DriverManager.getConnection("jdbc:sqlite:src/main/resources/DB.db");
@@ -150,7 +146,6 @@ public class DB {
         }
     }
 
-    @CheckReturnValue
     public static void setGuildNoticeOnlyChannel(long guildId, long channelId) {
         try (
                 Connection c = DriverManager.getConnection("jdbc:sqlite:src/main/resources/DB.db");
@@ -164,7 +159,6 @@ public class DB {
         }
     }
 
-    @CheckReturnValue
     public static void setGuildNoticeOnlySchool(long guildId, String school) {
         try (
                 Connection c = DriverManager.getConnection("jdbc:sqlite:src/main/resources/DB.db");

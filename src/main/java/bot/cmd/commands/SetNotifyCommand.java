@@ -5,12 +5,18 @@ import bot.utils.BotColor;
 import bot.utils.DB;
 import bot.SchoolData;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+
+import static bot.cmd.autocomplete.SchoolComplete.schoolComplete;
 
 public class SetNotifyCommand implements BotCommand {
     @Override
@@ -91,14 +97,14 @@ public class SetNotifyCommand implements BotCommand {
                 builder.setTitle("알림 설정을 변경했어요!");
 
                 if (channelOption != null && schoolOption != null) {
-                    TextChannel textChannel = channelOption.getAsTextChannel();
+                    TextChannel textChannel = channelOption.getAsChannel().asTextChannel();
                     String school = schoolOption.getAsString();
                     builder.appendDescription("채널 변경: 앞으로 " + textChannel.getAsMention() + "에서 알려드릴게요!\n\n");
                     builder.appendDescription("학교 변경: 앞으로 `" + school + "`의 급식 정보로 알려드릴게요!\n\n");
                     DB.setGuildNotice(event.getGuild().getIdLong(), textChannel.getIdLong(), school);
                 } else {
                     if (channelOption != null) {
-                        TextChannel textChannel = channelOption.getAsTextChannel();
+                        TextChannel textChannel = channelOption.getAsChannel().asTextChannel();
                         builder.appendDescription("채널 변경: 앞으로 " + textChannel.getAsMention() + "에서 알려드릴게요!\n\n");
                         DB.setGuildNoticeOnlyChannel(event.getGuild().getIdLong(), textChannel.getIdLong());
                     }
@@ -116,13 +122,6 @@ public class SetNotifyCommand implements BotCommand {
 
     @Override
     public void onComplete(CommandAutoCompleteInteractionEvent event) {
-        HashSet<String> strings = new HashSet<>(schools.keySet());
-        strings.removeIf(s -> !s.startsWith(event.getFocusedOption().getValue()));
-        HashSet<Command.Choice> choices = new HashSet<>();
-        for (String s : strings) {
-            if (choices.size() >= 24) break;
-            choices.add(new Command.Choice(s, s));
-        }
-        event.replyChoices(choices).queue();
+        schoolComplete(event);
     }
 }

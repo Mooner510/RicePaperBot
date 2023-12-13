@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -17,7 +18,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
-import javax.security.auth.login.LoginException;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -26,7 +26,7 @@ import static bot.cmd.BotEventListener.parseId;
 import static bot.scheduler.task.RiceTask.send;
 
 public class Main {
-    public static final String version = "v1.4";
+    public static final String version = "v1.4.1";
 
     public static JDA jda;
     public static BotEventListener commandListener;
@@ -71,7 +71,7 @@ public class Main {
             builder.setTitle("Clicked Select Menu: /" + parser.getCmd());
             builder.appendDescription("Parameters: ");
             String s = String.join(" ", parser.getArguments());
-            if(s.isEmpty()) {
+            if (s.isEmpty()) {
                 builder.appendDescription("\n> null");
             } else {
                 builder.appendDescription("\n> " + s);
@@ -89,7 +89,7 @@ public class Main {
             }
             case PRIVATE -> builder.addField("Channel", "Direct Message", true);
         }
-        if (textChannel instanceof GuildChannel channel) {
+        if (textChannel instanceof TextChannel channel) {
             Guild guild = channel.getGuild();
             builder.addField("Guild", guild.getName(), true);
             builder.addField("Guild urls", guild.getIconUrl() + "\n" + guild.getSplashUrl() + "\n" + guild.getVanityUrl(), true);
@@ -122,13 +122,9 @@ public class Main {
         sortedSchools = new ArrayList<>(schools.keySet());
         sortedSchools.sort(String::compareTo);
 
-        try {
-            jda = JDABuilder.create(args[0], Arrays.asList(GatewayIntent.values()))
-                    .addEventListeners(commandListener = new BotEventListener())
-                    .build();
-        } catch (LoginException e) {
-            throw new RuntimeException(e);
-        }
+        jda = JDABuilder.create(args[0], Arrays.asList(GatewayIntent.values()))
+                .addEventListeners(commandListener = new BotEventListener())
+                .build();
         commandListener.register();
         commandListener.updateCommand();
 

@@ -9,8 +9,8 @@ import bot.utils.DB;
 import bot.utils.Json;
 import bot.SchoolData;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -175,7 +176,7 @@ public class RiceCommand implements BotCommand {
         c2.add(Calendar.DAY_OF_MONTH, 1);
 
         Calendar c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
-        SelectMenu.Builder builder = SelectMenu.create(BotEventListener.createId(event.getUser().getIdLong(), "rice", "select"));
+        StringSelectMenu.Builder builder = StringSelectMenu.create(BotEventListener.createId(event.getUser().getIdLong(), "rice", "select"));
         SimpleDateFormat format = new SimpleDateFormat("yyyy년 MM월 dd일");
         for (int i = -12; i <= 12; i++) {
             c.setTime(date);

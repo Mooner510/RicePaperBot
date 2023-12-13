@@ -3,13 +3,11 @@ package bot.cmd;
 import bot.cmd.selects.RiceSelects;
 import bot.cmd.buttons.RiceButton;
 import bot.cmd.commands.*;
-import kr.mooner510.cmd.commands.*;
-import kr.mooner510.ricepaper.cmd.commands.*;
 import bot.utils.InteractionIdParser;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.jetbrains.annotations.NotNull;
@@ -106,7 +104,7 @@ public class BotEventListener extends ListenerAdapter {
     }
 
     @Override
-    public void onSelectMenuInteraction(@NotNull SelectMenuInteractionEvent event) {
+    public void onStringSelectInteraction(StringSelectInteractionEvent event) {
         String id = event.getComponent().getId();
         if (id != null) {
             InteractionIdParser parser = parseId(id);

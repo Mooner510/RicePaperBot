@@ -6,7 +6,7 @@ import bot.utils.BotColor;
 import bot.utils.DB;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -51,7 +51,7 @@ public class RiceTask {
         cal.set(Calendar.MILLISECOND, 0);
 
         System.out.println("Breakfast Date: " + cal.getTime());
-        if(cal.getTimeInMillis() < cur) {
+        if (cal.getTimeInMillis() < cur) {
             System.out.println("+ Add Breakfast Date");
             cal.add(Calendar.DATE, 1);
         }
@@ -65,7 +65,7 @@ public class RiceTask {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         System.out.println("Lunch Date: " + cal.getTime());
-        if(cal.getTimeInMillis() < cur) {
+        if (cal.getTimeInMillis() < cur) {
             System.out.println("+ Add Lunch Date");
             cal.add(Calendar.DATE, 1);
         }
@@ -79,7 +79,7 @@ public class RiceTask {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         System.out.println("Dinner Date: " + cal.getTime());
-        if(cal.getTimeInMillis() < cur) {
+        if (cal.getTimeInMillis() < cur) {
             System.out.println("+ Add Dinner Date");
             cal.add(Calendar.DATE, 1);
         }
@@ -109,7 +109,7 @@ public class RiceTask {
                 jda.retrieveUserById(id).queue(user -> {
                     SchoolData schoolData;
                     if (user == null || (schoolData = DB.getSchool(id)) == null) {
-                        if(user == null) fail.add("id: " + id);
+                        if (user == null) fail.add("id: " + id);
                         else fail.add(user.getAsTag());
                         System.out.println(id);
                         integer.incrementAndGet();
@@ -117,7 +117,7 @@ public class RiceTask {
                         MessageEmbed embed = RiceCommand.getRiceEmbed(schoolData, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), type);
                         user.openPrivateChannel().queue(privateChannel -> {
                             if (privateChannel.canTalk()) {
-                                if(embed != null) privateChannel.sendMessageEmbeds(embed).queue();
+                                if (embed != null) privateChannel.sendMessageEmbeds(embed).queue();
                                 done.add(user.getAsTag());
                             } else {
                                 fail.add(user.getAsTag());
@@ -127,11 +127,12 @@ public class RiceTask {
                     }
                 });
             }
-            while(integer.get() < noticeSize) {}
-            if(done.length() > 0) builder.addField("Success", "```yml\n- " + done + "\n```", false);
-            if(fail.length() > 0) builder.addField("Failed", "```yml\n- " + fail + "\n```", false);
+            while (integer.get() < noticeSize) {
+            }
+            if (done.length() > 0) builder.addField("Success", "```yml\n- " + done + "\n```", false);
+            if (fail.length() > 0) builder.addField("Failed", "```yml\n- " + fail + "\n```", false);
             TextChannel channel = jda.getTextChannelById(979213156712853514L);
-            if(channel != null) channel.sendMessageEmbeds(builder.build()).queue();
+            if (channel != null) channel.sendMessageEmbeds(builder.build()).queue();
         }).start();
     }
 
@@ -146,7 +147,7 @@ public class RiceTask {
                     MessageEmbed embed = RiceCommand.getRiceEmbed(schoolData, year, month, day, type);
                     user.openPrivateChannel().queue(privateChannel -> {
                         if (privateChannel.canTalk()) {
-                            if(embed != null) privateChannel.sendMessageEmbeds(embed).queue();
+                            if (embed != null) privateChannel.sendMessageEmbeds(embed).queue();
                         }
                     });
                 }
