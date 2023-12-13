@@ -99,7 +99,7 @@ public class SetNotifyCommand implements BotCommand {
                     return;
                 }
 
-                builder.setTitle("알림 설정을 변경했어요!");
+                builder.setTitle("알림 설정을 변경했어요!").setColor(BotColor.SUCCESS);
 
                 if (channelOption != null && schoolOption != null) {
                     TextChannel textChannel = channelOption.getAsChannel().asTextChannel();
