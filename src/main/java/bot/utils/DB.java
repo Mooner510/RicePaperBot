@@ -111,7 +111,7 @@ public class DB {
                 PreparedStatement s = c.prepareStatement("SELECT * FROM GuildNotice WHERE guild_id=?");
         ) {
             s.setLong(1, guildId);
-            return s.executeUpdate() > 0;
+            return s.executeQuery().next();
         } catch (SQLException e) {
             e.printStackTrace();
         }
