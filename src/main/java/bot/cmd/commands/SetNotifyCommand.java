@@ -1,5 +1,6 @@
 package bot.cmd.commands;
 
+import bot.Main;
 import bot.cmd.BotCommand;
 import bot.utils.BotColor;
 import bot.utils.DB;
@@ -104,16 +105,22 @@ public class SetNotifyCommand implements BotCommand {
                 if (channelOption != null && schoolOption != null) {
                     TextChannel textChannel = channelOption.getAsChannel().asTextChannel();
                     String school = schoolOption.getAsString();
-                    builder.appendDescription("채널 변경: 앞으로 " + textChannel.getAsMention() + "에서 알려드릴게요!\n");
-                    builder.appendDescription("학교 변경: 앞으로 `" + school + "`의 급식 정보로 알려드릴게요!");
-                    builder.appendDescription("""
-                            \n학교마다 급식 시간이 다르기 때문에 대략적인 시간보다 일찍 알려드린답니다!
-                                    
-                            **조식**: 7시
-                            **중식**: 11시 30분
-                            **조식**: 5시
-                            """);
-                    DB.setGuildNotice(guildId, textChannel.getIdLong(), school);
+                    if (Main.schools.containsKey(school)) {
+                        builder.appendDescription("채널 변경: 앞으로 " + textChannel.getAsMention() + "에서 알려드릴게요!\n");
+                        builder.appendDescription("학교 변경: 앞으로 `" + school + "`의 급식 정보로 알려드릴게요!");
+                        builder.appendDescription("""
+                                \n학교마다 급식 시간이 다르기 때문에 대략적인 시간보다 일찍 알려드린답니다!
+                                        
+                                **조식**: 7시
+                                **중식**: 11시 30분
+                                **조식**: 5시
+                                """);
+                        DB.setGuildNotice(guildId, textChannel.getIdLong(), school);
+                    } else {
+                        builder.setTitle("이런!")
+                                .setDescription("`" + school + "`는(은) 대체 어디 학교죠? 아직 등록되지 않은 학교일지도 몰라요")
+                                .setColor(BotColor.FAIL);
+                    }
                 } else {
                     if (DB.checkGuildNotice(guildId)) {
                         if (channelOption != null) {
@@ -124,8 +131,14 @@ public class SetNotifyCommand implements BotCommand {
 
                         if (schoolOption != null) {
                             String school = schoolOption.getAsString();
-                            builder.appendDescription("학교 변경: 앞으로 `" + school + "`의 급식 정보로 알려드릴게요!");
-                            DB.setGuildNoticeOnlySchool(guildId, school);
+                            if (Main.schools.containsKey(school)) {
+                                builder.appendDescription("학교 변경: 앞으로 `" + school + "`의 급식 정보로 알려드릴게요!");
+                                DB.setGuildNoticeOnlySchool(guildId, school);
+                            } else {
+                                builder.setTitle("이런!")
+                                        .setDescription("`" + school + "`는(은) 대체 어디 학교죠? 아직 등록되지 않은 학교일지도 몰라요.")
+                                        .setColor(BotColor.FAIL);
+                            }
                         }
                     } else {
                         builder.setTitle("이런!")

@@ -56,7 +56,7 @@ public class RiceCommand implements BotCommand, BotSelectMenu, BotButton {
 
         if (schoolData == null) {
             EmbedBuilder builder = new EmbedBuilder();
-            builder.setTitle("어머! 그 학교는 대체 어디죠?").setDescription("설마 새로운 학교를 만들 생각은 아닌거죠?\n참고로 학교 이름은 완전한 이름으로 부탁드려요.").setColor(BotColor.FAIL);
+            builder.setTitle("어머! `" + s.getAsString() + "`는 대체 어디죠?").setDescription("설마 새로운 학교를 만들 생각은 아닌거죠?\n혹여나 아직 등록되지 않은 학교일지도 몰라요.").setColor(BotColor.FAIL);
             event.deferReply(false).addEmbeds(builder.build()).queue();
             return;
         }
